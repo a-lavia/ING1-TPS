@@ -13,36 +13,43 @@ TestCase subclass: #IdiomTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!IdiomTest methodsFor: 'testing' stamp: 'HAW 4/14/2017 16:56:37'!
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/3/2017 21:25:33'!
+runTimeOfBlock: block
+
+	|millisecondsBeforeRunning millisecondsAfterRunning|
+	
+	millisecondsBeforeRunning := Time millisecondClockValue.
+	block value.
+	millisecondsAfterRunning := Time millisecondClockValue.
+	
+	^(millisecondsAfterRunning - millisecondsBeforeRunning).! !
+
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/3/2017 21:25:43'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
-	| customerBook millisecondsBeforeRunning millisecondsAfterRunning |
+	| customerBook millisecondsRunTime |
 	
 	customerBook := CustomerBook  new.
 	
-	millisecondsBeforeRunning := Time millisecondClockValue.
-	customerBook addCustomerNamed: 'John Lennon'.
-	millisecondsAfterRunning := Time millisecondClockValue.
+	millisecondsRunTime := self runTimeOfBlock: [customerBook addCustomerNamed: 'John Lennon'.].
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < 50 
+	self assert: millisecondsRunTime < 50 
 	
 ! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'HernanWilkinson 4/11/2016 20:29'!
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/3/2017 21:25:48'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
-	| customerBook millisecondsBeforeRunning millisecondsAfterRunning paulMcCartney |
+	| customerBook millisecondsRunTime paulMcCartney |
 	
 	customerBook := CustomerBook  new.
 	paulMcCartney := 'Paul McCartney'.
 	
 	customerBook addCustomerNamed: paulMcCartney.
 	  
-	millisecondsBeforeRunning := Time millisecondClockValue.
-	customerBook removeCustomerNamed: paulMcCartney.
-	millisecondsAfterRunning := Time millisecondClockValue.
+	millisecondsRunTime:= self runTimeOfBlock: [customerBook removeCustomerNamed: paulMcCartney.].
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < 100 
+	self assert: millisecondsRunTime < 100 
 	
 ! !
 
