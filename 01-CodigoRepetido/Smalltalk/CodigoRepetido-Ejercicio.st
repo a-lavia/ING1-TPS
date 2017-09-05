@@ -13,6 +13,12 @@ TestCase subclass: #IdiomTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 04:41:10'!
+assertMethod: method producesError: error  when: errorCondition andVerifies: sanityCondition
+	[ method value. self fail ]
+	on: error
+	do: [ :anError | self assert: (errorCondition value: anError). self assert: sanityCondition value.]! !
+
 !IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 01:17:31'!
 assertRunTimeOf: block  isLessThan: milliseconds
 	| millisecondsTime |
@@ -57,21 +63,19 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	
 ! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'HernanWilkinson 5/9/2012 18:12'!
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 04:43:40'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook |
 			
 	customerBook := CustomerBook new.
+	
+	self assertMethod: [ customerBook addCustomerNamed: ''. ] 
+	producesError: Error
+	when: [:anError | anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.] 
+	andVerifies: [customerBook isEmpty.]! !
 
-	[ customerBook addCustomerNamed: ''.
-	self fail ]
-		on: Error 
-		do: [ :anError | 
-			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
-			self assert: customerBook isEmpty ]! !
-
-!IdiomTest methodsFor: 'testing' stamp: 'HAW 8/28/2017 08:57:25'!
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 04:43:55'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -80,13 +84,10 @@ test04CanNotRemoveAnInvalidCustomer
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	
-	[ customerBook removeCustomerNamed: 'Paul McCartney'.
-	self fail ]
-		on: NotFound 
-		do: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
-! !
+	self assertMethod: [ customerBook removeCustomerNamed: 'Paul McCartney'. ]
+	producesError: NotFound
+	when: [ :anError | customerBook numberOfCustomers = 1.]
+	andVerifies: [customerBook includesCustomerNamed: johnLennon.]! !
 
 
 !classDefinition: #CustomerBook category: #'CodigoRepetido-Ejercicio'!
