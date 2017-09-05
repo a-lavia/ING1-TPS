@@ -13,6 +13,14 @@ TestCase subclass: #IdiomTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 01:17:31'!
+assertRunTimeOf: block  isLessThan: milliseconds
+	| millisecondsTime |
+	
+	millisecondsTime := self runTimeOfBlock: block.
+	
+	self assert: millisecondsTime < milliseconds! !
+
 !IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/3/2017 21:25:33'!
 runTimeOfBlock: block
 
@@ -24,32 +32,28 @@ runTimeOfBlock: block
 	
 	^(millisecondsAfterRunning - millisecondsBeforeRunning).! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/3/2017 21:25:43'!
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 01:13:12'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
-	| customerBook millisecondsRunTime |
+	| customerBook |
 	
 	customerBook := CustomerBook  new.
 	
-	millisecondsRunTime := self runTimeOfBlock: [customerBook addCustomerNamed: 'John Lennon'.].
-	
-	self assert: millisecondsRunTime < 50 
+	self assertRunTimeOf: [customerBook addCustomerNamed: 'John Lennon'.] isLessThan: 50.
 	
 ! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/3/2017 21:25:48'!
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 01:14:02'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
-	| customerBook millisecondsRunTime paulMcCartney |
+	| customerBook paulMcCartney |
 	
 	customerBook := CustomerBook  new.
 	paulMcCartney := 'Paul McCartney'.
 	
 	customerBook addCustomerNamed: paulMcCartney.
 	  
-	millisecondsRunTime:= self runTimeOfBlock: [customerBook removeCustomerNamed: paulMcCartney.].
-	
-	self assert: millisecondsRunTime < 100 
+	self assertRunTimeOf: [customerBook removeCustomerNamed: paulMcCartney.] isLessThan: 100.
 	
 ! !
 
