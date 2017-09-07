@@ -13,13 +13,13 @@ TestCase subclass: #IdiomTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 04:41:10'!
+!IdiomTest methodsFor: 'helpers' stamp: 'rok 9/7/2017 14:39:20'!
 assertMethod: method producesError: error  when: errorCondition andVerifies: sanityCondition
 	[ method value. self fail ]
 	on: error
 	do: [ :anError | self assert: (errorCondition value: anError). self assert: sanityCondition value.]! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 01:17:31'!
+!IdiomTest methodsFor: 'helpers' stamp: 'rok 9/7/2017 14:39:04'!
 assertRunTimeOf: block  isLessThan: milliseconds
 	| millisecondsTime |
 	
@@ -27,16 +27,17 @@ assertRunTimeOf: block  isLessThan: milliseconds
 	
 	self assert: millisecondsTime < milliseconds! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/3/2017 21:25:33'!
-runTimeOfBlock: block
+!IdiomTest methodsFor: 'helpers' stamp: 'rok 9/7/2017 14:37:41'!
+runTimeOfBlock: aBlock
 
 	|millisecondsBeforeRunning millisecondsAfterRunning|
 	
 	millisecondsBeforeRunning := Time millisecondClockValue.
-	block value.
+	aBlock value.
 	millisecondsAfterRunning := Time millisecondClockValue.
 	
 	^(millisecondsAfterRunning - millisecondsBeforeRunning).! !
+
 
 !IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/5/2017 01:13:12'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
