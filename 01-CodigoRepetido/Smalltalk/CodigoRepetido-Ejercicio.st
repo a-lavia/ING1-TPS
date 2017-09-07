@@ -21,11 +21,11 @@ assertRunTimeOf: aBlock  isLessThan: milliseconds
 	
 	self assert: millisecondsTime < milliseconds! !
 
-!IdiomTest methodsFor: 'helpers' stamp: 'a-lavia 9/7/2017 15:31:59'!
-forMethod: method onError: error  withCondition: errorCondition assert: sanityCondition
+!IdiomTest methodsFor: 'helpers' stamp: 'a-lavia 9/7/2017 16:39:35'!
+forMethod: method withError: error check: assertBlock
 	[ method value. self fail ]
 	on: error
-	do: [ :anError | self assert: (errorCondition value: anError). self assert: sanityCondition value.]! !
+	do: [ :anError | assertBlock value: anError]! !
 
 !IdiomTest methodsFor: 'helpers' stamp: 'rok 9/7/2017 14:37:41'!
 runTimeOfBlock: aBlock
@@ -64,19 +64,17 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	
 ! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/7/2017 15:32:30'!
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/7/2017 16:43:07'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook |
 			
 	customerBook := CustomerBook new.
 	
-	self forMethod: [ customerBook addCustomerNamed: ''. ] 
-	onError: Error
-	withCondition: [:anError | anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.] 
-	assert: [customerBook isEmpty.]! !
+	self forMethod: [ customerBook addCustomerNamed: ''. ] withError: Error
+	check: [:anError | self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage. self assert: customerBook isEmpty.] ! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/7/2017 15:33:05'!
+!IdiomTest methodsFor: 'testing' stamp: 'a-lavia 9/7/2017 16:43:11'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -85,10 +83,8 @@ test04CanNotRemoveAnInvalidCustomer
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	
-	self forMethod: [ customerBook removeCustomerNamed: 'Paul McCartney'. ]
-	onError: NotFound
-	withCondition: [:anError | customerBook numberOfCustomers = 1.]
-	assert: [customerBook includesCustomerNamed: johnLennon.]! !
+	self forMethod: [ customerBook removeCustomerNamed: 'Paul McCartney'. ] withError: NotFound
+	check: [:anError | self assert: customerBook numberOfCustomers = 1. self assert: (customerBook includesCustomerNamed: johnLennon).]! !
 
 
 !classDefinition: #CustomerBook category: #'CodigoRepetido-Ejercicio'!
