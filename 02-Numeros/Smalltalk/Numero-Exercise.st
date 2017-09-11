@@ -282,44 +282,53 @@ initalizeWith: aValue
 	value := aValue! !
 
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/8/2017 00:49:52'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:22:05'!
 * aMultiplier 
-	(aMultiplier isKindOf: Entero) ifTrue: [
-		^self class with: value * aMultiplier integerValue
-	].
+	^aMultiplier timesEntero: self.! !
 
-	(aMultiplier isKindOf: Fraccion) ifTrue: [
-		^self * aMultiplier numerator / aMultiplier denominator
-	]
-	! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/7/2017 21:46:18'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:22:38'!
 + anAdder 
-	
-	"^self class with: value + anAdder integerValue"
-	"(Fraccion with: ((value * anAdder denominator integerValue) + (anAdder numerator integerValue)) over: (anAdder denominator integerValue))"
-	(anAdder isKindOf: Entero) ifTrue: [^self class with: value + anAdder integerValue].
-	(anAdder isKindOf: Fraccion) ifTrue: [^(self * anAdder denominator + anAdder numerator)/ anAdder denominator].
-! !
+	^anAdder plusEntero: self.! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/8/2017 00:59:51'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:22:49'!
 / aDivisor 
-	(aDivisor isKindOf: Entero) ifTrue: [
-		^Fraccion with: self over: aDivisor
-	].
-	(aDivisor isKindOf: Fraccion) ifTrue: [
-		^self * aDivisor denominator / aDivisor numerator
-	]! !
+	^aDivisor divideEntero: self.! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:55'!
 // aDivisor 
 	
 	^self class with: value // aDivisor integerValue! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:00'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:24:33'!
+divideEntero: anEnteroDividend
+	^Fraccion with: anEnteroDividend over: self.! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 19:43:07'!
+divideFraccion: aFraccionDividend
+	^(aFraccionDividend numerator) / (aFraccionDividend denominator * self)		! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:22:58'!
 greatestCommonDivisorWith: anEntero 
-	
 	^self class with: (value gcd: anEntero integerValue)! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 19:07:35'!
+plusEntero: anEnteroAdder 
+	^self class with: value + anEnteroAdder integerValue.
+! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 19:18:49'!
+plusFraccion: aFraccionAdder 
+	^(self * aFraccionAdder denominator + aFraccionAdder numerator)/ aFraccionAdder denominator.
+! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:24:43'!
+timesEntero: anEnteroMultiplier
+	^self class with: value * anEnteroMultiplier integerValue! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 19:04:22'!
+timesFraccion: aFraccionMultiplier 
+	^self * aFraccionMultiplier numerator / aFraccionMultiplier denominator
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -376,41 +385,46 @@ hash
 	^(numerator hash / denominator hash) hash! !
 
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/8/2017 00:52:19'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:21:56'!
 * aMultiplier 
-	(aMultiplier isKindOf: Fraccion) ifTrue: [
-		^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)
-	].
+	^aMultiplier timesFraccion: self.! !
 
-	(aMultiplier isKindOf: Entero) ifTrue: [
-		^(numerator * aMultiplier) / denominator
-	]
-	! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/8/2017 00:42:24'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:23:27'!
 + anAdder 
-	
-	| newNumerator newDenominator |
-	(anAdder isKindOf: Fraccion) ifTrue: [
-		newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
-		newDenominator := denominator * anAdder denominator.
-	
-		^newNumerator / newDenominator 
-	].
-	"(anAdder isKindOf: Fraccion) ifTrue: [^(self * anAdder denominator + anAdder numerator)/ anAdder denominator]."
-	(anAdder isKindOf: Entero) ifTrue: [
-		^(denominator * anAdder + numerator)  / denominator
-	]! !
+	^anAdder plusFraccion: self.! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/8/2017 00:54:52'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:23:44'!
 / aDivisor 
-	(aDivisor isKindOf: Fraccion) ifTrue: [
-		^(numerator * aDivisor denominator) / (denominator * aDivisor numerator)
-	].
+	^aDivisor divideFraccion: self.! !
 
-	(aDivisor isKindOf: Entero) ifTrue: [
-		^(numerator) / (denominator * aDivisor)		
-	]! !
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:17:43'!
+divideEntero: anEnteroDividend
+	^anEnteroDividend * denominator / numerator! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:23:51'!
+divideFraccion: aFraccionDividend 
+	^(aFraccionDividend numerator * denominator) / (aFraccionDividend denominator * numerator)! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:15:08'!
+plusEntero: anEnteroAdder
+	^(denominator * anEnteroAdder + numerator)  / denominator! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:15:46'!
+plusFraccion: aFraccionAdder
+	| newNumerator newDenominator |
+	newNumerator := (numerator * aFraccionAdder denominator) + (denominator * aFraccionAdder numerator).
+	newDenominator := denominator * aFraccionAdder denominator.
+	
+	^newNumerator / newDenominator! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:13:54'!
+timesEntero: anEnteroMultiplier 
+	^(numerator * anEnteroMultiplier) / denominator! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'a-lavia 9/10/2017 22:14:22'!
+timesFraccion: aFraccionMultiplier
+	^(numerator * aFraccionMultiplier numerator) / (denominator * aFraccionMultiplier denominator)
+	! !
 
 
 !Fraccion methodsFor: 'accessing' stamp: 'HernanWilkinson 5/7/2016 21:56'!
