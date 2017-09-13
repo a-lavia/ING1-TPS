@@ -283,26 +283,11 @@ executeIfOne: aBlock
 Denominator class
 	instanceVariableNames: ''!
 
-!Denominator class methodsFor: 'initialization' stamp: 'rok 9/12/2017 16:40:43'!
+!Denominator class methodsFor: 'initialization' stamp: 'rok 9/13/2017 10:39:06'!
 withNumero: aNumber
 
 	aNumber isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
-	"aNumber isOne ifTrue: [ self error: 'una fraccion no puede tener denominador 1 porque sino es un entero' ]."
-	aNumber isOne ifTrue: [^OneDenominator new initializeWith: aNumber] ifFalse: [^self new initializeWith: aNumber].! !
-
-
-!classDefinition: #OneDenominator category: #'Numero-Exercise'!
-Denominator subclass: #OneDenominator
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Numero-Exercise'!
-
-!OneDenominator methodsFor: 'testing' stamp: 'rok 9/12/2017 16:22:38'!
-executeIfOne: aBlock
-
-	aBlock value.! !
-
+	aNumber isOne ifTrue: [^One new] ifFalse: [^self new initializeWith: aNumber].! !
 
 
 !classDefinition: #Entero category: #'Numero-Exercise'!
@@ -428,6 +413,19 @@ with: aValue
 	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
 	
 	^self new initializeWith: aValue! !
+
+
+!classDefinition: #One category: #'Numero-Exercise'!
+Entero subclass: #One
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numero-Exercise'!
+
+!One methodsFor: 'testing' stamp: 'rok 9/13/2017 10:38:25'!
+executeIfOne: aBlock
+
+	aBlock value.! !
 
 
 !classDefinition: #Fraccion category: #'Numero-Exercise'!
@@ -609,7 +607,6 @@ initializeWith: aValue
 greatestCommonDivisorWith: aDenominator
 
 	^value greatestCommonDivisorWith: aDenominator numberValue! !
-
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
