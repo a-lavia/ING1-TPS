@@ -283,11 +283,11 @@ executeIfOne: aBlock
 Denominator class
 	instanceVariableNames: ''!
 
-!Denominator class methodsFor: 'initialization' stamp: 'rok 9/13/2017 10:39:06'!
+!Denominator class methodsFor: 'initialization' stamp: 'rok 9/13/2017 10:53:21'!
 withNumero: aNumber
 
 	aNumber isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
-	aNumber isOne ifTrue: [^One new] ifFalse: [^self new initializeWith: aNumber].! !
+	aNumber isOne ifTrue: [^One new initialize] ifFalse: [^self new initializeWith: aNumber].! !
 
 
 !classDefinition: #Entero category: #'Numero-Exercise'!
@@ -426,6 +426,17 @@ Entero subclass: #One
 executeIfOne: aBlock
 
 	aBlock value.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'One class' category: #'Numero-Exercise'!
+One class
+	instanceVariableNames: ''!
+
+!One class methodsFor: 'initialization' stamp: 'rok 9/13/2017 10:52:21'!
+initialize
+
+	super value: 1.! !
 
 
 !classDefinition: #Fraccion category: #'Numero-Exercise'!
@@ -620,3 +631,5 @@ withNumero: aNumber
 	aNumber isZero ifTrue: [ self error: 'una fraccion no puede ser cero' ].
 	
 	^self new initializeWith: aNumber.! !
+
+One initialize!
