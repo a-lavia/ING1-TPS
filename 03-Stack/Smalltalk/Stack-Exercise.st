@@ -139,16 +139,51 @@ test10CanNotTopWhenThereAreNoObjectsInTheStack
 
 !classDefinition: #OOStack category: #'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: ''
+	instanceVariableNames: 'array size'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
+
+!OOStack methodsFor: 'initialization' stamp: 'a-lavia 9/14/2017 04:20:23'!
+initialize
+	array := Array new: 10.
+	size := 0.! !
+
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:21:43'!
+isEmpty
+	^size = 0.! !
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:29:40'!
+pop
+	size = 0 ifTrue: [self error: OOStack stackEmptyErrorDescription].
+	size := size - 1.
+	^array at: size +1.! !
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:28:26'!
+push: anObject 
+	array at: size +1 put: anObject.
+	size := size + 1.! !
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:27:20'!
+size
+	^size.! !
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:29:55'!
+top
+	size = 0 ifTrue: [self error: OOStack stackEmptyErrorDescription].
+	^array at: size.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'OOStack class' category: #'Stack-Exercise'!
 OOStack class
 	instanceVariableNames: ''!
+
+!OOStack class methodsFor: 'initialization' stamp: 'a-lavia 9/14/2017 04:19:56'!
+new
+	^super new initialize! !
+
 
 !OOStack class methodsFor: 'error descriptions' stamp: 'HernanWilkinson 5/7/2012 11:51'!
 stackEmptyErrorDescription
