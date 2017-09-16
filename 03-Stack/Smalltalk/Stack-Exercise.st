@@ -137,42 +137,57 @@ test10CanNotTopWhenThereAreNoObjectsInTheStack
 ! !
 
 
-!classDefinition: #OOStack category: #'Stack-Exercise'!
-Object subclass: #OOStack
-	instanceVariableNames: 'array size'
+!classDefinition: #EmptyStack category: #'Stack-Exercise'!
+Object subclass: #EmptyStack
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'initialization' stamp: 'a-lavia 9/14/2017 04:20:23'!
-initialize
-	array := Array new: 10.
-	size := 0.! !
-
-
-!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:21:43'!
-isEmpty
-	^size = 0.! !
-
-!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:29:40'!
-pop
-	size = 0 ifTrue: [self error: OOStack stackEmptyErrorDescription].
-	size := size - 1.
-	^array at: size +1.! !
-
-!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:28:26'!
-push: anObject 
-	array at: size +1 put: anObject.
-	size := size + 1.! !
-
-!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:27:20'!
+!EmptyStack methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/15/2017 19:43:41'!
 size
-	^size.! !
+	^0! !
 
-!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/14/2017 04:29:55'!
+!EmptyStack methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/15/2017 19:46:24'!
 top
-	size = 0 ifTrue: [self error: OOStack stackEmptyErrorDescription].
-	^array at: size.! !
+	^self error: OOStack stackEmptyErrorDescription.! !
+
+
+!classDefinition: #OOStack category: #'Stack-Exercise'!
+Object subclass: #OOStack
+	instanceVariableNames: 'stack'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!OOStack methodsFor: 'initialization' stamp: 'a-lavia 9/15/2017 19:35:18'!
+initialize
+	stack := EmptyStack new.! !
+
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/15/2017 20:54:06'!
+isEmpty
+	^stack size = 0.! !
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/15/2017 19:36:39'!
+pop
+	| anObject |
+	
+	anObject := stack top.
+	stack := stack tail.
+	^anObject.! !
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/15/2017 19:39:06'!
+push: anObject 
+	stack := PopulatedStack with: anObject tail: stack! !
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/15/2017 19:41:45'!
+size
+	^stack size.! !
+
+!OOStack methodsFor: 'operations' stamp: 'a-lavia 9/15/2017 20:08:37'!
+top
+	^stack top.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -189,3 +204,38 @@ new
 stackEmptyErrorDescription
 	
 	^ 'Stack is empty'! !
+
+
+!classDefinition: #PopulatedStack category: #'Stack-Exercise'!
+Object subclass: #PopulatedStack
+	instanceVariableNames: 'top tail'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!PopulatedStack methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/15/2017 20:52:41'!
+initializeWith: anObject tail: aStack
+	top := anObject.
+	tail := aStack.! !
+
+!PopulatedStack methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/15/2017 20:14:07'!
+size
+	^1 + tail size.! !
+
+!PopulatedStack methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/15/2017 20:11:10'!
+tail
+	^tail! !
+
+!PopulatedStack methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/15/2017 20:12:33'!
+top
+	^top! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PopulatedStack class' category: #'Stack-Exercise'!
+PopulatedStack class
+	instanceVariableNames: ''!
+
+!PopulatedStack class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/15/2017 20:53:17'!
+with: anObject tail: aStack
+	^PopulatedStack new initializeWith: anObject tail: aStack.! !
