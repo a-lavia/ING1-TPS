@@ -144,11 +144,6 @@ Object subclass: #Element
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!Element methodsFor: 'operations' stamp: 'rok 9/15/2017 00:54:19'!
-executeIfNothing: aBlock
-
-	^nil! !
-
 !Element methodsFor: 'operations' stamp: 'rok 9/15/2017 00:02:24'!
 instanceWith: aValue
 
@@ -179,13 +174,10 @@ Object subclass: #Nothing
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!Nothing methodsFor: 'operations' stamp: 'rok 9/15/2017 01:21:50'!
-executeIfNothing: aBlock
+!Nothing methodsFor: 'colaborators' stamp: 'rok 9/16/2017 13:27:33'!
+value
 
-	aBlock value.
-
-	
-	! !
+	self error: OOStack stackEmptyErrorDescription.! !
 
 
 !classDefinition: #OOStack category: #'Stack-Exercise'!
@@ -207,14 +199,12 @@ isEmpty
 
 	^self size = 0.! !
 
-!OOStack methodsFor: 'operations' stamp: 'rok 9/15/2017 01:30:25'!
+!OOStack methodsFor: 'operations' stamp: 'rok 9/16/2017 13:29:34'!
 last
 
 	| last |
 	
 	last := stack last.
-	
-	last executeIfNothing: [self throwEmptyException].
 
 	^last! !
 
@@ -249,11 +239,6 @@ top
 
 	^self last value.! !
 
-
-!OOStack methodsFor: 'errors' stamp: 'rok 9/15/2017 00:55:55'!
-throwEmptyException
-
-	self error: self class stackEmptyErrorDescription.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
