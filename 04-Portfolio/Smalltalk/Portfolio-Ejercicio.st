@@ -403,38 +403,45 @@ balance
 
 !classDefinition: #Portfolio category: #'Portfolio-Ejercicio'!
 SummarizingAccount subclass: #Portfolio
-	instanceVariableNames: ''
+	instanceVariableNames: 'accounts transactions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:39'!
+!Portfolio methodsFor: 'balance' stamp: 'a-lavia 9/23/2017 22:46:51'!
 balance
+	| balance |
+	balance := 0.
+	accounts do: [ :anAccount | balance := balance + anAccount balance.].
+	^balance.! !
 
-	self shouldBeImplemented ! !
 
-
-!Portfolio methodsFor: 'testing' stamp: 'HernanWilkinson 7/13/2011 18:39'!
+!Portfolio methodsFor: 'testing' stamp: 'a-lavia 9/23/2017 23:06:20'!
 manages: anAccount
+	^accounts includes: anAccount.! !
 
-		self shouldBeImplemented 
-! !
-
-!Portfolio methodsFor: 'testing' stamp: 'HernanWilkinson 7/13/2011 18:39'!
+!Portfolio methodsFor: 'testing' stamp: 'a-lavia 9/23/2017 23:26:17'!
 registers: aTtransaction
+	^self transactions includes: aTtransaction.! !
 
-	self shouldBeImplemented ! !
 
-
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:39'!
+!Portfolio methodsFor: 'transactions' stamp: 'a-lavia 9/23/2017 23:25:06'!
 transactions 
+	| transactions |
+	transactions := OrderedCollection new.
+	accounts do: [:anAccount | transactions addAll: (self transactionsOf: anAccount). ].
+	^transactions! !
 
-	self shouldBeImplemented ! !
-
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:40'!
+!Portfolio methodsFor: 'transactions' stamp: 'a-lavia 9/23/2017 23:22:52'!
 transactionsOf: anAccount 
 
-	self shouldBeImplemented ! !
+	^anAccount transactions.! !
+
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/23/2017 23:10:18'!
+initialize: aCollectionOfAccounts
+	accounts := aCollectionOfAccounts.
+	^self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -442,15 +449,17 @@ transactionsOf: anAccount
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:41'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'a-lavia 9/23/2017 22:44:52'!
 with: anAccount1 with: anAccount2
+	| accounts |
+	accounts := Set new.
+	accounts add: anAccount1.
+	accounts add: anAccount2.
+	^self withAll: accounts.! !
 
-	self shouldBeImplemented ! !
-
-!Portfolio class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:41'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'a-lavia 9/23/2017 23:09:35'!
 withAll: aCollectionOfAccounts
-
-	self shouldBeImplemented ! !
+	^self new initialize: aCollectionOfAccounts! !
 
 
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
