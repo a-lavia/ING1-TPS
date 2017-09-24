@@ -237,7 +237,7 @@ test17PortfolioKnowsItsPortfoliosTransactions
 	self assert: ((composedPortfolio transactionsOf:complexPortfolio) includes:deposit2).
 ! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/18/2011 17:27'!
+!PortfolioTest methodsFor: 'tests' stamp: 'a-lavia 9/24/2017 15:51:02'!
 test18PortfolioCanNotAnswerTransactionsOfNotManagedAccounts 
 
 	| account1 account2 account3 complexPortfolio |
@@ -416,9 +416,12 @@ balance
 	^balance.! !
 
 
-!Portfolio methodsFor: 'testing' stamp: 'a-lavia 9/23/2017 23:06:20'!
+!Portfolio methodsFor: 'testing' stamp: 'a-lavia 9/24/2017 15:38:32'!
 manages: anAccount
-	^accounts includes: anAccount.! !
+	| composedPortfolioManagesAccount |
+	composedPortfolioManagesAccount := false.
+	accounts do: [:otherAccount | (otherAccount isKindOf: Portfolio) ifTrue: [composedPortfolioManagesAccount := otherAccount manages: anAccount]. ].
+	^(accounts includes: anAccount) | composedPortfolioManagesAccount.! !
 
 !Portfolio methodsFor: 'testing' stamp: 'a-lavia 9/23/2017 23:26:17'!
 registers: aTtransaction
@@ -432,9 +435,9 @@ transactions
 	accounts do: [:anAccount | transactions addAll: (self transactionsOf: anAccount). ].
 	^transactions! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'a-lavia 9/23/2017 23:22:52'!
+!Portfolio methodsFor: 'transactions' stamp: 'a-lavia 9/24/2017 15:53:43'!
 transactionsOf: anAccount 
-
+	(self manages: anAccount) ifFalse: [self error: Portfolio accountNotManagedMessageDescription.].
 	^anAccount transactions.! !
 
 
@@ -449,9 +452,12 @@ initialize: aCollectionOfAccounts
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'a-lavia 9/23/2017 22:44:52'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'a-lavia 9/24/2017 16:08:54'!
 with: anAccount1 with: anAccount2
 	| accounts |
+	(anAccount1 = anAccount2) ifTrue: [self error: Portfolio accountAlreadyManagedErrorMessage.].
+	((anAccount1 isKindOf: Portfolio) & (anAccount1 manages: anAccount2)) ifTrue: [self error: Portfolio accountAlreadyManagedErrorMessage.].
+	((anAccount2 isKindOf: Portfolio) & (anAccount2 manages: anAccount1)) ifTrue: [self error: Portfolio accountAlreadyManagedErrorMessage.].
 	accounts := Set new.
 	accounts add: anAccount1.
 	accounts add: anAccount2.
@@ -460,6 +466,15 @@ with: anAccount1 with: anAccount2
 !Portfolio class methodsFor: 'instance creation' stamp: 'a-lavia 9/23/2017 23:09:35'!
 withAll: aCollectionOfAccounts
 	^self new initialize: aCollectionOfAccounts! !
+
+
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/24/2017 15:59:00'!
+accountAlreadyManagedErrorMessage
+	^'Account already managed.'.! !
+
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/24/2017 15:54:01'!
+accountNotManagedMessageDescription
+	^'Account not managed error.'.! !
 
 
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
