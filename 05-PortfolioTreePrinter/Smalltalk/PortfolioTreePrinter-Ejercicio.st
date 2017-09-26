@@ -458,29 +458,25 @@ test29ReversePortfolioTreePrinterPrintsTheCompositeStartingFromTheLeaves
 	! !
 
 
-!PortfolioTest methodsFor: 'test support' stamp: 'rok 9/25/2017 20:49:22'!
+!PortfolioTest methodsFor: 'test support' stamp: 'rok 9/25/2017 23:58:39'!
 accountSummaryLinesOf: aReceptiveAccount 
 	
-	| summary |
-	
-	aReceptiveAccount transactions do:[:aTransaction | summary := aTransaction summary].
-	
-	^summary! !
+  ^aReceptiveAccount accountSummaryLines! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'rok 9/26/2017 01:31:51'!
 accountTransferNetOf: aReceptiveAccount 
 	
-	self shouldBeImplemented ! !
+	^aReceptiveAccount accountTransferNet! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'rok 9/26/2017 02:29:29'!
 investmentEarningsOf: aReceptiveAccount 
 	
-	self shouldBeImplemented ! !
+	^aReceptiveAccount investmentEarnings! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'rok 9/26/2017 02:43:54'!
 investmentNetOf: aReceptiveAccount 
 	
-	self shouldBeImplemented ! !
+	^aReceptiveAccount investmentNet ! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
 portofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
@@ -506,8 +502,28 @@ value
 	self subclassResponsibility ! !
 
 
-!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 21:04:56'!
-impute: aBalance
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:54:53'!
+imputeBalance: aBalance
+
+	self subclassResponsibility.! !
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:35:54'!
+imputeEarning: anEarning
+
+	self subclassResponsibility.! !
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:39:31'!
+imputeInvestmentNet: anInvestment
+
+	self subclassResponsibility.! !
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:04'!
+imputeTransferNet: aNeto
+
+	self subclassResponsibility.! !
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:50:47'!
+neto
 
 	self subclassResponsibility.! !
 
@@ -522,23 +538,81 @@ summary
 AccountTransaction class
 	instanceVariableNames: ''!
 
-!AccountTransaction class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:38'!
+!AccountTransaction class methodsFor: 'instance creation' stamp: 'rok 9/25/2017 23:31:55'!
 register: aValue on: account
 
-	| withdraw |
-	
-	withdraw := self for: aValue.
-	account register: withdraw.
-		
-	^ withdraw! !
+	self subclassResponsibility.! !
 
 
 !classDefinition: #CertificateOfDeposit category: #'PortfolioTreePrinter-Ejercicio'!
 AccountTransaction subclass: #CertificateOfDeposit
-	instanceVariableNames: 'value tna numberOfDays account'
+	instanceVariableNames: 'value tna numberOfDays'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:26:57'!
+imputeBalance: aBalance
+
+	^aBalance - value! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:45:31'!
+imputeEarning: anEarning
+
+	^(100*((tna)/360)*numberOfDays) + anEarning! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:40:10'!
+imputeInvestmentNet: anInvestment
+
+	^anInvestment  + value! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:27:26'!
+imputeTransferNet: aNeto
+
+	^aNeto! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:22:48'!
+initializeFor: anAmmount during: aNumberOfDays at: anEarningAvg
+
+	value := anAmmount.
+	numberOfDays := aNumberOfDays.
+	tna := anEarningAvg.	! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 03:15:58'!
+summary
+
+	^'Plazo fijo por ', value printString,  ' durante ', numberOfDays printString, ' dias a una tna de ', (100*tna) printString, '%'! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:27:36'!
+value
+
+	^value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CertificateOfDeposit class' category: #'PortfolioTreePrinter-Ejercicio'!
+CertificateOfDeposit class
+	instanceVariableNames: ''!
+
+!CertificateOfDeposit class methodsFor: 'initialization' stamp: 'rok 9/26/2017 02:25:44'!
+register: anAmmount during: aNumberOfDays at: anEarningAvg on: anAccount 
+	
+	| certificate |
+	
+	certificate := self for: anAmmount during: aNumberOfDays  at: anEarningAvg.
+	
+	anAccount register: certificate.! !
+
+
+!CertificateOfDeposit class methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:25:32'!
+for: anAmmount during: aNumberOfDays at: anEarningAvg
+
+	^self new initializeFor: anAmmount during: aNumberOfDays  at: anEarningAvg! !
+
+!CertificateOfDeposit class methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:23:37'!
+register: anAmmount during: aNumberOfDays at: anEarningAvg
+
+	^self new initializeFor: anAmmount during: aNumberOfDays  at: anEarningAvg! !
 
 
 !classDefinition: #Deposit category: #'PortfolioTreePrinter-Ejercicio'!
@@ -560,10 +634,25 @@ value
 	^ value! !
 
 
-!Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 21:05:36'!
-impute: aBalance
+!Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:53:09'!
+imputeBalance: aBalance
 	
 	^aBalance + value ! !
+
+!Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:36:56'!
+imputeEarning: anEarning
+
+	^anEarning! !
+
+!Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:40:53'!
+imputeInvestmentNet: anInvestment
+
+	^anInvestment ! !
+
+!Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:21'!
+imputeTransferNet: aNeto
+
+	^aNeto! !
 
 !Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 20:56:47'!
 summary
@@ -581,68 +670,123 @@ for: aValue
 
 	^ self new initializeFor: aValue ! !
 
-!Deposit class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 19:41'!
+!Deposit class methodsFor: 'instance creation' stamp: 'rok 9/25/2017 23:32:53'!
 register: aValue on: account
 
-	| withdraw |
+	| deposit |
 	
-	withdraw := self for: aValue.
-	account register: withdraw.
+	deposit := self for: aValue.
+	account register: deposit.
 		
-	^ withdraw! !
+	^ deposit! !
 
 
-!classDefinition: #Transfer category: #'PortfolioTreePrinter-Ejercicio'!
-AccountTransaction subclass: #Transfer
-	instanceVariableNames: 'value sourceAccount targetAccount'
+!classDefinition: #TransferDeposit category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransaction subclass: #TransferDeposit
+	instanceVariableNames: 'transfer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 21:36:49'!
-impute: aBalance
-
-	^aBalance - value! !
-
-!Transfer methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 21:28:04'!
-initializeFor: aValue from: aSourceAccount to: aTargetAccount
-
-	value := aValue. 
-	sourceAccount := aSourceAccount.
-	targetAccount := aTargetAccount.
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:56:05'!
+imputeBalance: aBalance
 	
-	! !
+	^aBalance + transfer value ! !
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 21:47:30'!
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:37:23'!
+imputeEarning: anEarning
+
+	^anEarning! !
+
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:41:04'!
+imputeInvestmentNet: anInvestment
+
+	^anInvestment ! !
+
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:58'!
+imputeTransferNet: aNeto
+
+	^aNeto + transfer value! !
+
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:17:05'!
+initializeFor: aTransfer
+
+	transfer := aTransfer! !
+
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:12:51'!
 summary
 
-	^'Transferencia por -', value printString.! !
+	^'Transferencia por ', transfer value printString! !
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 20:59:21'!
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:09:34'!
 value
 
-	^value! !
+	^transfer value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Transfer class' category: #'PortfolioTreePrinter-Ejercicio'!
-Transfer class
+!classDefinition: 'TransferDeposit class' category: #'PortfolioTreePrinter-Ejercicio'!
+TransferDeposit class
 	instanceVariableNames: ''!
 
-!Transfer class methodsFor: 'transactions' stamp: 'rok 9/25/2017 21:29:38'!
-for: aValue from: aSourceAccount to: aTargetAccount
+!TransferDeposit class methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:16:16'!
+for: aTransfer
 
-	^self new initializeFor:aValue  from:aSourceAccount  to:aTargetAccount ! !
+	^self new initializeFor: aTransfer! !
 
-!Transfer class methodsFor: 'transactions' stamp: 'rok 9/25/2017 21:40:53'!
-register: anAmount from: anAccount1 to: anAccount2 
-	| transfer |
-	transfer := self for: anAmount from: anAccount1 to: anAccount2.
-	anAccount1 register: transfer.
-	anAccount2 register: transfer.
-	^transfer
-	
-	! !
+
+!classDefinition: #TransferWithdraw category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransaction subclass: #TransferWithdraw
+	instanceVariableNames: 'transfer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:56:17'!
+imputeBalance: aBalance
+
+	^aBalance - transfer value! !
+
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:37:14'!
+imputeEarning: anEarning
+
+	^anEarning! !
+
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:41:21'!
+imputeInvestmentNet: anInvestment
+
+	^anInvestment ! !
+
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:47'!
+imputeTransferNet: aNeto
+
+	^aNeto - transfer value! !
+
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:16:57'!
+initializeFor: aTransfer
+
+	transfer := aTransfer! !
+
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:13:01'!
+summary
+
+	^'Transferencia por ', transfer value negated printString! !
+
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:09:47'!
+value
+
+	^transfer value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TransferWithdraw class' category: #'PortfolioTreePrinter-Ejercicio'!
+TransferWithdraw class
+	instanceVariableNames: ''!
+
+!TransferWithdraw class methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:16:24'!
+for: aTransfer
+
+	^self new initializeFor: aTransfer! !
 
 
 !classDefinition: #Withdraw category: #'PortfolioTreePrinter-Ejercicio'!
@@ -664,10 +808,25 @@ value
 	^ value ! !
 
 
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 21:06:19'!
-impute: aBalance
+!Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:55:31'!
+imputeBalance: aBalance
 
 	^aBalance - value! !
+
+!Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:37:04'!
+imputeEarning: anEarning
+
+	^anEarning! !
+
+!Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:41:27'!
+imputeInvestmentNet: anInvestment
+
+	^anInvestment ! !
+
+!Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:37'!
+imputeTransferNet: aNeto
+
+	^aNeto! !
 
 !Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 20:56:06'!
 summary
@@ -845,10 +1004,10 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'rok 9/25/2017 21:08:49'!
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'rok 9/26/2017 01:54:41'!
 balance
 
-	^ transactions inject: 0 into: [ :balance :transaction | transaction impute: balance].! !
+	^ transactions inject: 0 into: [ :balance :transaction | transaction imputeBalance: balance].! !
 
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 register: aTransaction
@@ -873,3 +1032,87 @@ registers: aTtransaction
 
 	^ transactions includes: aTtransaction 
 ! !
+
+
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:16:19'!
+accountSummaryLines
+	
+	| summaryLines |
+
+	summaryLines := OrderedCollection  new.
+	
+	self transactions do: [ :aTransaction | summaryLines add: aTransaction summary ].
+	
+	^summaryLines! !
+
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:03:18'!
+accountTransferNet
+	
+	^transactions inject: 0 into: 
+	[ :neto :transaction | transaction imputeTransferNet: neto].! !
+
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:35:22'!
+investmentEarnings
+
+	^transactions inject: 0 into: 
+	[ :earning :transaction | transaction imputeEarning: earning].	! !
+
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:43:08'!
+investmentNet
+
+	^transactions inject: 0 into: 
+	[ :investment :transaction | transaction imputeInvestmentNet: investment].	! !
+
+
+!classDefinition: #Transfer category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #Transfer
+	instanceVariableNames: 'value legTransferWithdraw legTransferDeposit'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:59:48'!
+initializeFor: aValue
+
+	value := aValue ! !
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:56:55'!
+registerTransferWithdraw: aTransferWithdraw andTransferDeposit: aTransferDeposit
+
+	legTransferWithdraw := aTransferWithdraw.
+	legTransferDeposit := aTransferDeposit.! !
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:07:00'!
+value 
+
+	^value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Transfer class' category: #'PortfolioTreePrinter-Ejercicio'!
+Transfer class
+	instanceVariableNames: ''!
+
+!Transfer class methodsFor: 'transactions' stamp: 'rok 9/26/2017 01:01:12'!
+register: anAmount from: sourceAccount to: destinyAccount 
+
+	| transfer transferFrom transferTo |
+
+	transfer := Transfer for: anAmount.
+
+	"La verdad esto no me gusta...Prefiero que TransferWIthdraw y TransferDeposit reciban el valor y no tener que crear un Transfer que unifique el valor para luego mutarla para agregarle las patitas"
+
+	transferFrom := TransferWithdraw for: transfer.
+	transferTo := TransferDeposit  for: transfer.
+
+	transfer registerTransferWithdraw: transferFrom andTransferDeposit: transferTo.
+	
+	sourceAccount register: transferFrom.
+	destinyAccount register: transferTo.
+	! !
+
+
+!Transfer class methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:00:02'!
+for: aValue
+
+	^self new initializeFor: aValue ! !
