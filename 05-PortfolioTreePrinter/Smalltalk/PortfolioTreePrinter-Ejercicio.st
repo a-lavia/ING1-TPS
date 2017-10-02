@@ -458,25 +458,21 @@ test29ReversePortfolioTreePrinterPrintsTheCompositeStartingFromTheLeaves
 	! !
 
 
-!PortfolioTest methodsFor: 'test support' stamp: 'rok 9/25/2017 23:58:39'!
+!PortfolioTest methodsFor: 'test support' stamp: 'a-lavia 9/28/2017 14:19:42'!
 accountSummaryLinesOf: aReceptiveAccount 
-	
-  ^aReceptiveAccount accountSummaryLines! !
+	^SummaryLinesQuery for: aReceptiveAccount.! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'rok 9/26/2017 01:31:51'!
+!PortfolioTest methodsFor: 'test support' stamp: 'a-lavia 9/28/2017 14:48:58'!
 accountTransferNetOf: aReceptiveAccount 
-	
-	^aReceptiveAccount accountTransferNet! !
+	^TransferNetQuery for: aReceptiveAccount.! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'rok 9/26/2017 02:29:29'!
+!PortfolioTest methodsFor: 'test support' stamp: 'a-lavia 9/28/2017 14:59:07'!
 investmentEarningsOf: aReceptiveAccount 
-	
-	^aReceptiveAccount investmentEarnings! !
+	^InvestmentEarningQuery for: aReceptiveAccount.! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'rok 9/26/2017 02:43:54'!
-investmentNetOf: aReceptiveAccount 
-	
-	^aReceptiveAccount investmentNet ! !
+!PortfolioTest methodsFor: 'test support' stamp: 'a-lavia 9/28/2017 14:57:11'!
+investmentNetOf: aReceptiveAccount
+	^InvestmentNetQuery for: aReceptiveAccount.! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
 portofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
@@ -507,30 +503,9 @@ imputeBalance: aBalance
 
 	self subclassResponsibility.! !
 
-!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:35:54'!
-imputeEarning: anEarning
-
-	self subclassResponsibility.! !
-
-!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:39:31'!
-imputeInvestmentNet: anInvestment
-
-	self subclassResponsibility.! !
-
-!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:04'!
-imputeTransferNet: aNeto
-
-	self subclassResponsibility.! !
-
-!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:50:47'!
-neto
-
-	self subclassResponsibility.! !
-
-!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 20:50:07'!
-summary
-
-	self subclassResponsibility.! !
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:02:43'!
+runQuery: aQuery
+	^self subclassResponsibility ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -551,25 +526,10 @@ AccountTransaction subclass: #CertificateOfDeposit
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:26:57'!
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 03:55:14'!
 imputeBalance: aBalance
 
 	^aBalance - value! !
-
-!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:45:31'!
-imputeEarning: anEarning
-
-	^(100*((tna)/360)*numberOfDays) + anEarning! !
-
-!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:40:10'!
-imputeInvestmentNet: anInvestment
-
-	^anInvestment  + value! !
-
-!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:27:26'!
-imputeTransferNet: aNeto
-
-	^aNeto! !
 
 !CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:22:48'!
 initializeFor: anAmmount during: aNumberOfDays at: anEarningAvg
@@ -578,10 +538,17 @@ initializeFor: anAmmount during: aNumberOfDays at: anEarningAvg
 	numberOfDays := aNumberOfDays.
 	tna := anEarningAvg.	! !
 
-!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 03:15:58'!
-summary
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:14:00'!
+numberOfDays
+	^numberOfDays! !
 
-	^'Plazo fijo por ', value printString,  ' durante ', numberOfDays printString, ' dias a una tna de ', (100*tna) printString, '%'! !
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:24:33'!
+runQuery: aQuery
+	^aQuery computeCertificateOfDeposit: self.! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:13:47'!
+tna
+	^tna! !
 
 !CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:27:36'!
 value
@@ -628,6 +595,10 @@ initializeFor: aValue
 	value := aValue ! !
 
 
+!Deposit methodsFor: 'value' stamp: 'a-lavia 9/28/2017 14:24:48'!
+runQuery: aQuery
+	^aQuery computeDeposit: self.! !
+
 !Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
 
@@ -638,26 +609,6 @@ value
 imputeBalance: aBalance
 	
 	^aBalance + value ! !
-
-!Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:36:56'!
-imputeEarning: anEarning
-
-	^anEarning! !
-
-!Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:40:53'!
-imputeInvestmentNet: anInvestment
-
-	^anInvestment ! !
-
-!Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:21'!
-imputeTransferNet: aNeto
-
-	^aNeto! !
-
-!Deposit methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 20:56:47'!
-summary
-
-	^'Deposito por ' append: value asString.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -683,45 +634,29 @@ register: aValue on: account
 
 !classDefinition: #TransferDeposit category: #'PortfolioTreePrinter-Ejercicio'!
 AccountTransaction subclass: #TransferDeposit
-	instanceVariableNames: 'transfer'
+	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:56:05'!
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:10:08'!
 imputeBalance: aBalance
 	
-	^aBalance + transfer value ! !
+	^aBalance + value! !
 
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:37:23'!
-imputeEarning: anEarning
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:10:18'!
+initializeFor: aValue
 
-	^anEarning! !
+	value := aValue! !
 
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:41:04'!
-imputeInvestmentNet: anInvestment
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:25:16'!
+runQuery: aQuery
+	^aQuery computeTransferDeposit: self.! !
 
-	^anInvestment ! !
-
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:58'!
-imputeTransferNet: aNeto
-
-	^aNeto + transfer value! !
-
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:17:05'!
-initializeFor: aTransfer
-
-	transfer := aTransfer! !
-
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:12:51'!
-summary
-
-	^'Transferencia por ', transfer value printString! !
-
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:09:34'!
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:11:20'!
 value
 
-	^transfer value! !
+	^value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -729,53 +664,36 @@ value
 TransferDeposit class
 	instanceVariableNames: ''!
 
-!TransferDeposit class methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:16:16'!
-for: aTransfer
+!TransferDeposit class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:42:07'!
+for: anAmount
 
-	^self new initializeFor: aTransfer! !
+	^self new initializeFor: anAmount! !
 
 
 !classDefinition: #TransferWithdraw category: #'PortfolioTreePrinter-Ejercicio'!
 AccountTransaction subclass: #TransferWithdraw
-	instanceVariableNames: 'transfer'
+	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:56:17'!
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:09:11'!
 imputeBalance: aBalance
 
-	^aBalance - transfer value! !
+	^aBalance - value! !
 
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:37:14'!
-imputeEarning: anEarning
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:09:24'!
+initializeFor: aValue
 
-	^anEarning! !
+	value := aValue! !
 
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:41:21'!
-imputeInvestmentNet: anInvestment
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:25:26'!
+runQuery: aQuery
+	^aQuery computeTransferWithdraw: self.! !
 
-	^anInvestment ! !
-
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:47'!
-imputeTransferNet: aNeto
-
-	^aNeto - transfer value! !
-
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:16:57'!
-initializeFor: aTransfer
-
-	transfer := aTransfer! !
-
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:13:01'!
-summary
-
-	^'Transferencia por ', transfer value negated printString! !
-
-!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:09:47'!
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:42:29'!
 value
-
-	^transfer value! !
+	^value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -783,10 +701,10 @@ value
 TransferWithdraw class
 	instanceVariableNames: ''!
 
-!TransferWithdraw class methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 00:16:24'!
-for: aTransfer
+!TransferWithdraw class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:42:13'!
+for: anAmount
 
-	^self new initializeFor: aTransfer! !
+	^self new initializeFor: anAmount! !
 
 
 !classDefinition: #Withdraw category: #'PortfolioTreePrinter-Ejercicio'!
@@ -802,6 +720,10 @@ initializeFor: aValue
 	value := aValue ! !
 
 
+!Withdraw methodsFor: 'value' stamp: 'a-lavia 9/28/2017 14:25:35'!
+runQuery: aQuery
+	^aQuery computeWithdraw: self.! !
+
 !Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/14/2011 05:54'!
 value
 
@@ -812,28 +734,6 @@ value
 imputeBalance: aBalance
 
 	^aBalance - value! !
-
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:37:04'!
-imputeEarning: anEarning
-
-	^anEarning! !
-
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:41:27'!
-imputeInvestmentNet: anInvestment
-
-	^anInvestment ! !
-
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:02:37'!
-imputeTransferNet: aNeto
-
-	^aNeto! !
-
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'rok 9/25/2017 20:56:06'!
-summary
-
-	^'Extraccion por ' append: value asString
-
-	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -855,6 +755,202 @@ register: aValue on: account
 	account register: withdraw.
 		
 	^ withdraw! !
+
+
+!classDefinition: #Query category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #Query
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Query class' category: #'PortfolioTreePrinter-Ejercicio'!
+Query class
+	instanceVariableNames: ''!
+
+!Query class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:01:36'!
+computeCertificateOfDeposit: aCertificateOfDeposit
+	^self subclassResponsibility ! !
+
+!Query class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:00:33'!
+computeDeposit: aDeposit
+	^self subclassResponsibility ! !
+
+!Query class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 13:59:47'!
+computeTransferDeposit: aTransferDeposit
+	^self subclassResponsibility ! !
+
+!Query class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:00:13'!
+computeTransferWithdraw: aTransferWithdraw
+	^self subclassResponsibility ! !
+
+!Query class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:00:23'!
+computeWithdraw: aWithdraw
+	^self subclassResponsibility ! !
+
+!Query class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:20:14'!
+for: anAccount
+	^self subclassResponsibility ! !
+
+
+!classDefinition: #InvestmentEarningQuery category: #'PortfolioTreePrinter-Ejercicio'!
+Query subclass: #InvestmentEarningQuery
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'InvestmentEarningQuery class' category: #'PortfolioTreePrinter-Ejercicio'!
+InvestmentEarningQuery class
+	instanceVariableNames: ''!
+
+!InvestmentEarningQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:58:40'!
+computeCertificateOfDeposit: aCertificateOfDeposit
+	^(100*((aCertificateOfDeposit tna)/360)* (aCertificateOfDeposit numberOfDays))! !
+
+!InvestmentEarningQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:57:41'!
+computeDeposit: aDeposit
+	^0! !
+
+!InvestmentEarningQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:57:41'!
+computeTransferDeposit: aTransferDeposit
+	^0! !
+
+!InvestmentEarningQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:57:41'!
+computeTransferWithdraw: aTransferWithdraw
+	^0! !
+
+!InvestmentEarningQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:57:41'!
+computeWithdraw: aWithdraw
+	^0! !
+
+!InvestmentEarningQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:57:41'!
+for: anAccount
+	^anAccount transactions inject: 0 into: [:aInvestmentNet :aTransaction | aInvestmentNet + (aTransaction runQuery: self)]! !
+
+
+!classDefinition: #InvestmentNetQuery category: #'PortfolioTreePrinter-Ejercicio'!
+Query subclass: #InvestmentNetQuery
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'InvestmentNetQuery class' category: #'PortfolioTreePrinter-Ejercicio'!
+InvestmentNetQuery class
+	instanceVariableNames: ''!
+
+!InvestmentNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:52:12'!
+computeCertificateOfDeposit: aCertificateOfDeposit
+	^aCertificateOfDeposit value.! !
+
+!InvestmentNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:54:47'!
+computeDeposit: aDeposit
+	^0! !
+
+!InvestmentNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:55:02'!
+computeTransferDeposit: aTransferDeposit
+	^0! !
+
+!InvestmentNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:55:35'!
+computeTransferWithdraw: aTransferWithdraw
+	^0! !
+
+!InvestmentNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:55:47'!
+computeWithdraw: aWithdraw
+	^0! !
+
+!InvestmentNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:56:37'!
+for: anAccount
+	^anAccount transactions inject: 0 into: [:aInvestmentNet :aTransaction | aInvestmentNet + (aTransaction runQuery: self)]! !
+
+
+!classDefinition: #SummaryLinesQuery category: #'PortfolioTreePrinter-Ejercicio'!
+Query subclass: #SummaryLinesQuery
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'SummaryLinesQuery class' category: #'PortfolioTreePrinter-Ejercicio'!
+SummaryLinesQuery class
+	instanceVariableNames: ''!
+
+!SummaryLinesQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:15:00'!
+computeCertificateOfDeposit: aCertificateOfDeposit
+	^'Plazo fijo por ', (aCertificateOfDeposit value printString),  ' durante ', (aCertificateOfDeposit numberOfDays printString), ' dias a una tna de ', ((100*aCertificateOfDeposit tna) printString), '%'! !
+
+!SummaryLinesQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:12:35'!
+computeDeposit: aDeposit
+	^'Deposito por ', (aDeposit value asString).! !
+
+!SummaryLinesQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:37:46'!
+computeTransferDeposit: aTransferDeposit
+	^'Transferencia por ', ((aTransferDeposit value) asString)! !
+
+!SummaryLinesQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:59:38'!
+computeTransferWithdraw: aTransferWithdraw
+	^'Transferencia por ', (aTransferWithdraw value negated) asString! !
+
+!SummaryLinesQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:08:06'!
+computeWithdraw: aWithdraw
+	^'Extraccion por ' append: (aWithdraw value asString)! !
+
+!SummaryLinesQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:21:55'!
+for: anAccount
+	| summaryLines |
+
+	summaryLines := OrderedCollection  new.
+	
+	anAccount transactions do: [ :aTransaction | summaryLines add: (aTransaction runQuery: self)].
+	
+	^summaryLines! !
+
+
+!classDefinition: #TransferNetQuery category: #'PortfolioTreePrinter-Ejercicio'!
+Query subclass: #TransferNetQuery
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TransferNetQuery class' category: #'PortfolioTreePrinter-Ejercicio'!
+TransferNetQuery class
+	instanceVariableNames: ''!
+
+!TransferNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:45:16'!
+computeCertificateOfDeposit: aCertificateOfDeposit
+	^0! !
+
+!TransferNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:45:21'!
+computeDeposit: aDeposit
+	^0! !
+
+!TransferNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:45:32'!
+computeTransferDeposit: aTransferDeposit
+	^aTransferDeposit value! !
+
+!TransferNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:45:41'!
+computeTransferWithdraw: aTransferWithdraw
+	^aTransferWithdraw  value negated! !
+
+!TransferNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:45:46'!
+computeWithdraw: aWithdraw
+	^0! !
+
+!TransferNetQuery class methodsFor: 'as yet unclassified' stamp: 'a-lavia 9/28/2017 14:48:20'!
+for: anAccount
+	^anAccount transactions inject: 0 into: [:aTransferNet :aTransaction | aTransferNet + (aTransaction runQuery: self)]! !
 
 
 !classDefinition: #SummarizingAccount category: #'PortfolioTreePrinter-Ejercicio'!
@@ -1034,35 +1130,6 @@ registers: aTtransaction
 ! !
 
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 01:16:19'!
-accountSummaryLines
-	
-	| summaryLines |
-
-	summaryLines := OrderedCollection  new.
-	
-	self transactions do: [ :aTransaction | summaryLines add: aTransaction summary ].
-	
-	^summaryLines! !
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:03:18'!
-accountTransferNet
-	
-	^transactions inject: 0 into: 
-	[ :neto :transaction | transaction imputeTransferNet: neto].! !
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:35:22'!
-investmentEarnings
-
-	^transactions inject: 0 into: 
-	[ :earning :transaction | transaction imputeEarning: earning].	! !
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'rok 9/26/2017 02:43:08'!
-investmentNet
-
-	^transactions inject: 0 into: 
-	[ :investment :transaction | transaction imputeInvestmentNet: investment].	! !
-
 
 !classDefinition: #Transfer category: #'PortfolioTreePrinter-Ejercicio'!
 Object subclass: #Transfer
@@ -1093,17 +1160,14 @@ value
 Transfer class
 	instanceVariableNames: ''!
 
-!Transfer class methodsFor: 'transactions' stamp: 'rok 9/26/2017 01:01:12'!
+!Transfer class methodsFor: 'transactions' stamp: 'a-lavia 9/28/2017 14:41:34'!
 register: anAmount from: sourceAccount to: destinyAccount 
 
 	| transfer transferFrom transferTo |
 
 	transfer := Transfer for: anAmount.
-
-	"La verdad esto no me gusta...Prefiero que TransferWIthdraw y TransferDeposit reciban el valor y no tener que crear un Transfer que unifique el valor para luego mutarla para agregarle las patitas"
-
-	transferFrom := TransferWithdraw for: transfer.
-	transferTo := TransferDeposit  for: transfer.
+	transferFrom := TransferWithdraw for: anAmount.
+	transferTo := TransferDeposit  for: anAmount.
 
 	transfer registerTransferWithdraw: transferFrom andTransferDeposit: transferTo.
 	
