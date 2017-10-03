@@ -435,7 +435,123 @@ test05ElevatorGetsIdleWhenDoorGetOpened
 
 !classDefinition: #ElevatorController category: #'Elevator-Ejercicio'!
 Object subclass: #ElevatorController
-	instanceVariableNames: 'state cabinState cabinDoorState cabinFloorNumber floorsToGo'
+	instanceVariableNames: 'moving doorState floor requests'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:13:46'!
+cabinDoorClosed
+
+	doorState := #close.
+	moving := true! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:13:49'!
+cabinDoorOpened
+	
+	requests removeFirst.
+	doorState := #open.
+	! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 19:17:08'!
+cabinFloorNumber
+
+	^floor! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:15:04'!
+cabinOnFloor: aFloor 
+	
+	floor := aFloor.
+	doorState := #opening.
+	moving := false.! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:29:12'!
+closeCabinDoor
+	((self isIdle) or: (self isCabinMoving)) ifFalse: [doorState  := #closing].! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:08:59'!
+goUpPushedFromFloor: aFloor
+
+	doorState := #closing.	
+	requests add: aFloor.! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:22:11'!
+initialize
+
+	floor := 0.
+	moving := false.
+	doorState := #open.
+	requests := OrderedCollection new.! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:17:04'!
+isCabinDoorClosed
+	
+	^doorState = #close! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:31:59'!
+isCabinDoorClosing
+	
+	^doorState = #closing! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:31:36'!
+isCabinDoorOpened
+
+	^doorState = #open! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:32:08'!
+isCabinDoorOpening
+	
+	^doorState = #opening! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 18:57:45'!
+isCabinMoving
+
+	^moving! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 18:36:30'!
+isCabinStopped
+
+	^(self isCabinMoving) not ! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:18:23'!
+isCabinWaitingForPeople
+	^self isCabinDoorOpened.! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:09:15'!
+isIdle
+	
+	^requests size = 0
+	! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:00:56'!
+isWorking
+
+	^(self isIdle) not! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:58:41'!
+openCabinDoor
+	
+	(self isCabinMoving or: self isCabinDoorOpened) ifFalse: [ doorState := #opening. ].! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:16:46'!
+waitForPeopleTimedOut
+
+	doorState := #closing.
+! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ElevatorController class' category: #'Elevator-Ejercicio'!
+ElevatorController class
+	instanceVariableNames: ''!
+
+!ElevatorController class methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 18:42:48'!
+new
+	
+	| instance |
+	
+	instance := super new.
+	
+	instance initialize.
+	
+	^instance! !
