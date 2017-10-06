@@ -5,6 +5,18 @@ Error subclass: #ElevatorEmergency
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ElevatorEmergency class' category: #'Elevator-Ejercicio'!
+ElevatorEmergency class
+	instanceVariableNames: ''!
+
+!ElevatorEmergency class methodsFor: 'as yet unclassified' stamp: 'rok 10/5/2017 20:02:51'!
+error: aString 
+	"Throw a generic Error exception."
+
+	^self new signal: aString! !
+
 
 !classDefinition: #ElevatorTest category: #'Elevator-Ejercicio'!
 TestCase subclass: #ElevatorTest
@@ -120,8 +132,7 @@ test14CloseDoorDoesNothingWhenOpeningTheDoorToWaitForPeople
 	self assert: elevatorController isCabinStopped.
 	self assert: elevatorController isCabinDoorOpening.! !
 
-
-!ElevatorTest methodsFor: 'tests 4' stamp: 'HernanWilkinson 7/10/2011 17:42'!
+!ElevatorTest methodsFor: 'tests 3' stamp: 'rok 10/5/2017 19:26:48'!
 test15ElevatorHasToEnterEmergencyIfStoppedAndOtherFloorSensorTurnsOn
 
 	| elevatorController |
@@ -134,6 +145,7 @@ test15ElevatorHasToEnterEmergencyIfStoppedAndOtherFloorSensorTurnsOn
 		should: [ elevatorController cabinOnFloor:0 ]
 		raise: ElevatorEmergency 
 		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = 'Sensor de cabina desincronizado' ]! !
+
 
 !ElevatorTest methodsFor: 'tests 4' stamp: 'HernanWilkinson 7/10/2011 17:47'!
 test16ElevatorHasToEnterEmergencyIfFalling
@@ -440,8 +452,10 @@ Object subclass: #ElevatorController
 	poolDictionaries: ''
 	category: 'Elevator-Ejercicio'!
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:13:46'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/6/2017 00:58:51'!
 cabinDoorClosed
+
+	( self isIdle or: self isCabinDoorClosed or: self isCabinDoorOpening ) ifTrue: [ ElevatorEmergency error: 'Sensor de puerta desincronizado' ].
 
 	doorState := #close.
 	moving := true! !
@@ -458,16 +472,19 @@ cabinFloorNumber
 
 	^floor! !
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:15:04'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/6/2017 00:54:03'!
 cabinOnFloor: aFloor 
+	
+	( ( floor + 1 = aFloor ) not or: self isCabinStopped ) ifTrue: [ ElevatorEmergency error: 'Sensor de cabina desincronizado' ].
 	
 	floor := aFloor.
 	doorState := #opening.
 	moving := false.! !
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:29:12'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/6/2017 00:03:05'!
 closeCabinDoor
-	((self isIdle) or: (self isCabinMoving)) ifFalse: [doorState  := #closing].! !
+
+	((self isIdle) or: (self isCabinMoving) or: (self isCabinWaitingForPeople) not) ifFalse: [doorState  := #closing].! !
 
 !ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:08:59'!
 goUpPushedFromFloor: aFloor
@@ -513,8 +530,9 @@ isCabinStopped
 
 	^(self isCabinMoving) not ! !
 
-!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:18:23'!
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/5/2017 18:37:39'!
 isCabinWaitingForPeople
+
 	^self isCabinDoorOpened.! !
 
 !ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 21:09:15'!
@@ -522,6 +540,11 @@ isIdle
 	
 	^requests size = 0
 	! !
+
+!ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/6/2017 00:42:19'!
+isNext: aFloor
+
+	requests first = aFloor.! !
 
 !ElevatorController methodsFor: 'as yet unclassified' stamp: 'rok 10/2/2017 20:00:56'!
 isWorking
