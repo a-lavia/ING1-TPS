@@ -605,9 +605,9 @@ currentFloorNumber
 
 	^currentFloorNumber! !
 
-!Cabin methodsFor: 'floor' stamp: 'HAW 10/4/2017 10:30:50'!
+!Cabin methodsFor: 'floor' stamp: 'a-lavia 10/12/2017 19:38:22'!
 reachedFloorToStop
-	
+	elevator cabinIsStopped "chanchada".
 	elevator reachedFloorToStop.
 	self stop.
 	door startOpening! !
@@ -679,10 +679,11 @@ startClosingDoor
 	door startClosing! !
 
 
-!Cabin methodsFor: 'door - sensor activation' stamp: 'HAW 10/4/2017 10:04:32'!
+!Cabin methodsFor: 'door - sensor activation' stamp: 'a-lavia 10/12/2017 19:33:51'!
 doorClosed
 	
 	"Esto sirve solo porque siempre se esta yendo para arriba :-)"
+	elevator cabinIsMoving.
 	motor moveClockwise.
 	self makeMoving.! !
 
@@ -707,6 +708,21 @@ isMotorStopped
 door
 
 	^door! !
+
+
+!Cabin methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/12/2017 19:27:48'!
+cabinDoorClosed
+	elevator cabinDoorClosed.! !
+
+!Cabin methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/12/2017 19:45:33'!
+cabinDoorOpened"chanchada"
+	elevator cabinDoorOpened.
+	! !
+
+!Cabin methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/12/2017 19:46:50'!
+cabinDoorOpenning"chanchada"
+	elevator cabinDoorOpenning.
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -759,9 +775,8 @@ startClosing
 	motor moveClockwise.
 	self makeClosing	! !
 
-!CabinDoor methodsFor: 'actions' stamp: 'HAW 10/4/2017 10:28:35'!
+!CabinDoor methodsFor: 'actions' stamp: 'a-lavia 10/12/2017 20:46:48'!
 startOpening
-	
 	motor moveCounterClockwise.
 	self makeOpening	! !
 
@@ -789,15 +804,17 @@ openWhenOpening
 	"No hago nada porque ya me estoy abriendo - Hernan"! !
 
 
-!CabinDoor methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 16:36:05'!
+!CabinDoor methodsFor: 'sensor activation' stamp: 'a-lavia 10/12/2017 19:27:34'!
 closed
-	
+	cabin cabinDoorClosed.
 	state closed! !
 
-!CabinDoor methodsFor: 'sensor activation' stamp: 'HAW 10/4/2017 10:06:46'!
+!CabinDoor methodsFor: 'sensor activation' stamp: 'a-lavia 10/12/2017 19:45:08'!
 opened
 	
 	"TODO: Faltan tests para reaccionar distinto dependiendo del estado - Hernan"
+	
+	cabin cabinDoorOpened."chanchada"
 	
 	motor stop.
 	self makeOpened.
@@ -1324,18 +1341,18 @@ accept: aVisitor
 
 !classDefinition: #Elevator category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 Object subclass: #Elevator
-	instanceVariableNames: 'cabin state floorsToGo'
+	instanceVariableNames: 'cabin state floorsToGo visitors'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!Elevator methodsFor: 'initialization' stamp: 'HAW 10/3/2017 16:12:07'!
+!Elevator methodsFor: 'initialization' stamp: 'a-lavia 10/12/2017 20:17:52'!
 initialize
 
 	cabin := Cabin of: self.
 	floorsToGo := SortedCollection new.
 	state := ElevatorIdleState for: self.
-	! !
+	visitors := OrderedCollection new.! !
 
 
 !Elevator methodsFor: 'state change' stamp: 'HAW 10/3/2017 16:56:07'!
@@ -1349,9 +1366,9 @@ makeWorking
 	state := ElevatorWorkingState for: self! !
 
 
-!Elevator methodsFor: 'actions' stamp: 'HAW 10/3/2017 16:07:55'!
+!Elevator methodsFor: 'actions' stamp: 'a-lavia 10/12/2017 19:15:54'!
 goUpPushedFromFloor: aFloorNumber
-
+	console visitCabinDoorClosing: nil. "deberia pasar un estado de Cabin, o sea ni va aaca esto guacho"
 	^state goUpPushedFromFloor: aFloorNumber! !
 
 
@@ -1414,6 +1431,31 @@ cabin
 	
 	^cabin! !
 
+
+!Elevator methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/12/2017 20:20:34'!
+cabinDoorClosed"chanchada"
+	visitors do: [ :aVisitor | aVisitor visitCabinDoorClosed: nil ]! !
+
+!Elevator methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/12/2017 19:47:09'!
+cabinDoorOpened
+	console visitCabinDoorOpened: nil "chanchada"! !
+
+!Elevator methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/12/2017 19:39:27'!
+cabinDoorOpenning
+	console visitCabinDoorOpening: nil "chanchada"! !
+
+!Elevator methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/12/2017 19:35:22'!
+cabinIsMoving"chanchada"
+	console visitCabinMoving: nil! !
+
+!Elevator methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/12/2017 19:36:24'!
+cabinIsStopped"chanchada"
+	console visitCabinStopped: nil! !
+
+!Elevator methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/12/2017 20:22:03'!
+register: aElevatorVisitor
+	visitors add: aElevatorVisitor ! !
+
 
 !classDefinition: #ElevatorConsole category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 Object subclass: #ElevatorConsole
@@ -1422,9 +1464,9 @@ Object subclass: #ElevatorConsole
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!ElevatorConsole methodsFor: 'initialization' stamp: 'HAW 10/4/2017 14:16:02'!
+!ElevatorConsole methodsFor: 'initialization' stamp: 'a-lavia 10/12/2017 19:11:29'!
 initializeOf: anElevator
-	
+	anElevator addConsole: self. "chanchada"
 	stream := WriteStream on: String new.
 ! !
 
@@ -1587,12 +1629,15 @@ Object subclass: #ElevatorStatusView
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!ElevatorStatusView methodsFor: 'initialization' stamp: 'HAW 10/4/2017 14:16:11'!
+!ElevatorStatusView methodsFor: 'initialization' stamp: 'a-lavia 10/12/2017 20:00:19'!
 initializeOf: anElevator
+	anElevator addView: self. "chanchada"
+	cabinDoorFieldModel  := 'Opening'.
+	cabinFieldModel  := 'Stopped'.
 ! !
 
 
-!ElevatorStatusView methodsFor: 'accessing' stamp: 'HAW 10/4/2017 12:41:24'!
+!ElevatorStatusView methodsFor: 'accessing' stamp: 'a-lavia 10/12/2017 19:59:02'!
 cabinDoorFieldModel
 	
 	^ cabinDoorFieldModel! !
