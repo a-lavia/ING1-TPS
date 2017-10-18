@@ -1,472 +1,480 @@
-!classDefinition: #ElevatorEmergency category: #'ElevatorConsole-Ejercicio'!
-Error subclass: #ElevatorEmergency
-	instanceVariableNames: ''
+!classDefinition: #ElevatorTest category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+TestCase subclass: #ElevatorTest
+	instanceVariableNames: 'cabin door elevator'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-
-!classDefinition: #ElevatorControllerTest category: #'ElevatorConsole-Ejercicio'!
-TestCase subclass: #ElevatorControllerTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
-
-!ElevatorControllerTest methodsFor: 'tests 3' stamp: 'HernanWilkinson 7/10/2011 17:38'!
+!ElevatorTest methodsFor: 'tests 3' stamp: 'HAW 10/3/2017 19:49:29'!
 test09RequestToGoUpAreEnqueueWhenRequestedWhenCabinIsMoving
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor:1.
-	elevatorController goUpPushedFromFloor:2.
-	elevatorController cabinDoorOpened.
+	elevator goUpPushedFromFloor:1.
+	door closed.
+	cabin onFloor: 1.
+	elevator goUpPushedFromFloor:2.
+	door opened.
 
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinWaitingForPeople.
-	self assert: elevatorController isCabinDoorOpened.! !
+	self assert: elevator isWorking.
+	self assert: cabin isWaitingForPeople.
+	self assert: door isOpened.
 
-!ElevatorControllerTest methodsFor: 'tests 3' stamp: 'HernanWilkinson 7/10/2011 17:39'!
+	self assert: door isMotorStopped.
+	self assert: cabin isMotorStopped
+! !
+
+!ElevatorTest methodsFor: 'tests 3' stamp: 'HAW 10/3/2017 19:49:33'!
 test10CabinDoorStartClosingAfterWaitingForPeople
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor:1.
-	elevatorController goUpPushedFromFloor:2.
-	elevatorController cabinDoorOpened.
-	elevatorController waitForPeopleTimedOut.
+	elevator goUpPushedFromFloor:1.
+	door closed.
+	cabin onFloor: 1.
+	elevator goUpPushedFromFloor:2.
+	door opened.
+	cabin waitForPeopleTimedOut.
 
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorClosing.! !
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isClosing.
 
-!ElevatorControllerTest methodsFor: 'tests 3' stamp: 'HernanWilkinson 7/10/2011 17:39'!
+	self assert: door isMotorMovingClockwise.
+	self assert: cabin isMotorStopped
+! !
+
+!ElevatorTest methodsFor: 'tests 3' stamp: 'HAW 10/4/2017 10:17:12'!
 test11StopsWaitingForPeopleIfCloseDoorIsPressed
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor:1.
-	elevatorController goUpPushedFromFloor:2.
-	elevatorController cabinDoorOpened.
+	elevator goUpPushedFromFloor:1.
+	door closed.
+	cabin onFloor: 1.
+	elevator goUpPushedFromFloor:2.
+	door opened.
 
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinWaitingForPeople.
-	self assert: elevatorController isCabinDoorOpened.
+	self assert: elevator isWorking.
+	self assert: cabin isWaitingForPeople.
+	self assert: door isOpened.
 
-	elevatorController closeCabinDoor.
+	door close.
 
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorClosing.
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isClosing.
+
+	self assert: door isMotorMovingClockwise.
+	self assert: cabin isMotorStopped
+
 ! !
 
-!ElevatorControllerTest methodsFor: 'tests 3' stamp: 'HernanWilkinson 7/10/2011 17:39'!
+!ElevatorTest methodsFor: 'tests 3' stamp: 'HAW 10/4/2017 10:17:18'!
 test12CloseDoorDoesNothingIfIdle
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController closeCabinDoor.
+	door close.
 
-	self assert: elevatorController isIdle.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorOpened.! !
+	self assert: elevator isIdle.
+	self assert: cabin isStopped.
+	self assert: door isOpened.
 
-!ElevatorControllerTest methodsFor: 'tests 3' stamp: 'HernanWilkinson 7/10/2011 17:40'!
+	self assert: door isMotorStopped.
+	self assert: cabin isMotorStopped
+! !
+
+!ElevatorTest methodsFor: 'tests 3' stamp: 'HAW 10/4/2017 10:17:23'!
 test13CloseDoorDoesNothingWhenCabinIsMoving
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
+	elevator goUpPushedFromFloor:1.
+	door closed.
 
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinMoving.
-	self assert: elevatorController isCabinDoorClosed.
+	self assert: elevator isWorking.
+	self assert: cabin isMoving.
+	self assert: door isClosed.
 
-	elevatorController closeCabinDoor.
+	door close.
 
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinMoving.
-	self assert: elevatorController isCabinDoorClosed.! !
+	self assert: elevator isWorking.
+	self assert: cabin isMoving.
+	self assert: door isClosed.
 
-!ElevatorControllerTest methodsFor: 'tests 3' stamp: 'HernanWilkinson 7/10/2011 17:40'!
+	self assert: door isMotorStopped.
+	self assert: cabin isMotorMovingClockwise! !
+
+!ElevatorTest methodsFor: 'tests 3' stamp: 'HAW 10/4/2017 10:20:58'!
 test14CloseDoorDoesNothingWhenOpeningTheDoorToWaitForPeople
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-		
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor:1.
-	
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorOpening.
+	elevator goUpPushedFromFloor:1.
+	door closed.
+	cabin onFloor: 1.
 
-	elevatorController closeCabinDoor.
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isOpening.
 
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorOpening.! !
+	door close.
 
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isOpening.
 
-!ElevatorControllerTest methodsFor: 'tests 5' stamp: 'HernanWilkinson 7/10/2011 17:50'!
-test21CabinHasToStopOnTheFloorsOnItsWay
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	elevatorController goUpPushedFromFloor:2.
-	elevatorController cabinOnFloor:1.
-
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorOpening.! !
-
-!ElevatorControllerTest methodsFor: 'tests 5' stamp: 'HernanWilkinson 7/10/2011 17:50'!
-test22ElevatorCompletesAllTheRequests
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	elevatorController goUpPushedFromFloor:2.
-	elevatorController cabinOnFloor:1.
-	elevatorController cabinDoorOpened.
-	elevatorController waitForPeopleTimedOut.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor:2.
-	
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorOpening.! !
-
-!ElevatorControllerTest methodsFor: 'tests 5' stamp: 'HernanWilkinson 7/10/2011 17:50'!
-test23CabinHasToStopOnFloorsOnItsWayNoMatterHowTheyWellCalled
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-		
-	elevatorController goUpPushedFromFloor:2.
-	elevatorController cabinDoorClosed.
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinOnFloor:1.
-		
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorOpening.! !
-
-!ElevatorControllerTest methodsFor: 'tests 5' stamp: 'HernanWilkinson 7/10/2011 17:51'!
-test24CabinHasToStopAndWaitForPeopleOnFloorsOnItsWayNoMatterHowTheyWellCalled
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:2.
-	elevatorController cabinDoorClosed.
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinOnFloor:1.
-	elevatorController cabinDoorOpened.
-	elevatorController waitForPeopleTimedOut.
-	
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorClosing.! !
+	self assert: door isMotorMovingCounterClockwise.
+	self assert: cabin isMotorStopped
+	! !
 
 
-!ElevatorControllerTest methodsFor: 'tests 1' stamp: 'HernanWilkinson 7/10/2011 17:33'!
-test01ElevatorStartsIdleWithDoorOpenOnFloorZero
-
-	| elevatorController |
-		
-	elevatorController := ElevatorController new.
-		
-	self assert: elevatorController isIdle.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorOpened.
-	self assert: elevatorController cabinFloorNumber = 0
-! !
-
-!ElevatorControllerTest methodsFor: 'tests 1' stamp: 'HernanWilkinson 7/15/2011 17:53'!
-test02CabinDoorStartsClosingWhenElevatorGetsCalled
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-
-	elevatorController goUpPushedFromFloor: 1.
-	
-	self deny: elevatorController isIdle.
-	self assert: elevatorController isWorking.
-	
-	self assert: elevatorController isCabinStopped.
-	self deny: elevatorController isCabinMoving.
-	
-	self deny: elevatorController isCabinDoorOpened.
-	self deny: elevatorController isCabinDoorOpening.
-	self assert: elevatorController isCabinDoorClosing.
-	self deny: elevatorController isCabinDoorClosed.! !
-
-!ElevatorControllerTest methodsFor: 'tests 1' stamp: 'HernanWilkinson 7/15/2011 17:57'!
-test03CabinStartsMovingWhenDoorGetsClosed
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	
-	self deny: elevatorController isIdle.
-	self assert: elevatorController isWorking.
-
-	self deny: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinMoving.
-	
-	self deny: elevatorController isCabinDoorOpened.
-	self deny: elevatorController isCabinDoorOpening.
-	self deny: elevatorController isCabinDoorClosing.
-	self assert: elevatorController isCabinDoorClosed.! !
-
-!ElevatorControllerTest methodsFor: 'tests 1' stamp: 'HernanWilkinson 7/15/2011 18:00'!
-test04CabinStopsAndStartsOpeningDoorWhenGetsToDestination
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-
-	elevatorController goUpPushedFromFloor: 1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor: 1.
-
-	self deny: elevatorController isIdle.
-	self assert: elevatorController isWorking.
-	
-	self assert: elevatorController isCabinStopped.
-	self deny: elevatorController isCabinMoving.
-			
-	self deny: elevatorController isCabinDoorOpened.
-	self assert: elevatorController isCabinDoorOpening.
-	self deny: elevatorController isCabinDoorClosing.
-	self deny: elevatorController isCabinDoorClosed.
-
-	self assert: elevatorController cabinFloorNumber = 1
-! !
-
-!ElevatorControllerTest methodsFor: 'tests 1' stamp: 'HernanWilkinson 7/15/2011 18:00'!
-test05ElevatorGetsIdleWhenDoorGetOpened
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor: 1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor: 1.
-	elevatorController cabinDoorOpened.
-		
-	self assert: elevatorController isIdle.
-	self deny: elevatorController isWorking.
-		
-	self assert: elevatorController isCabinStopped.
-	self deny: elevatorController isCabinMoving.
-
-	self assert: elevatorController isCabinDoorOpened.
-	self deny: elevatorController isCabinDoorOpening.
-	self deny: elevatorController isCabinDoorClosing.
-	self deny: elevatorController isCabinDoorClosed.
-		
-	self assert: elevatorController cabinFloorNumber = 1! !
-
-
-!ElevatorControllerTest methodsFor: 'tests 2' stamp: 'HernanWilkinson 7/10/2011 17:35'!
-test06DoorKeepsOpenedWhenOpeningIsRequested
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	self assert: elevatorController isCabinDoorOpened.
-	
-	elevatorController openCabinDoor.
-
-	self assert: elevatorController isCabinDoorOpened.! !
-
-!ElevatorControllerTest methodsFor: 'tests 2' stamp: 'HernanWilkinson 7/15/2011 18:05'!
-test07DoorMustBeOpenedWhenCabinIsStoppedAndClosingDoors
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-
-	elevatorController goUpPushedFromFloor:1.
-		
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorClosing.
-		
-	elevatorController openCabinDoor.
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self deny: elevatorController isCabinDoorOpening.
-! !
-
-!ElevatorControllerTest methodsFor: 'tests 2' stamp: 'HernanWilkinson 7/10/2011 17:36'!
-test08CanNotOpenDoorWhenCabinIsMoving
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinMoving.
-	self assert: elevatorController isCabinDoorClosed.
-
-	elevatorController openCabinDoor.
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinMoving.
-	self assert: elevatorController isCabinDoorClosed.! !
-
-!ElevatorControllerTest methodsFor: 'tests 2' stamp: 'HernanWilkinson 7/10/2011 17:51'!
-test09DoorKeepsOpeneingWhenItIsOpeneing
-
-	| elevatorController |
-	elevatorController := ElevatorController new.
-
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor:1.
-
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorOpening.
-
-	elevatorController openCabinDoor.
-	self assert: elevatorController isWorking.
-	self assert: elevatorController isCabinStopped.
-	self assert: elevatorController isCabinDoorOpening.! !
-
-
-!ElevatorControllerTest methodsFor: 'tests 4' stamp: 'HernanWilkinson 7/10/2011 17:42'!
+!ElevatorTest methodsFor: 'tests 4' stamp: 'HAW 10/4/2017 10:12:01'!
 test15ElevatorHasToEnterEmergencyIfStoppedAndOtherFloorSensorTurnsOn
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor:1.
-	self 
-		should: [ elevatorController cabinOnFloor:0 ]
-		raise: ElevatorEmergency 
-		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = 'Sensor de cabina desincronizado' ]! !
+	elevator goUpPushedFromFloor:1.
+	door closed.
+	cabin onFloor: 1.
 
-!ElevatorControllerTest methodsFor: 'tests 4' stamp: 'HernanWilkinson 7/10/2011 17:47'!
+	self
+		should: [ cabin onFloor: 0 ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = Cabin sensorDesincronizedErrorMessage ]! !
+
+!ElevatorTest methodsFor: 'tests 4' stamp: 'HAW 10/4/2017 10:12:08'!
 test16ElevatorHasToEnterEmergencyIfFalling
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:2.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor:1.
-	self 
-		should: [ elevatorController cabinOnFloor:0 ]
-		raise: ElevatorEmergency 
-		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = 'Sensor de cabina desincronizado'. ]! !
+	elevator goUpPushedFromFloor:2.
+	door closed.
+	cabin onFloor: 1.
 
-!ElevatorControllerTest methodsFor: 'tests 4' stamp: 'HernanWilkinson 7/10/2011 17:47'!
+	self
+		should: [ cabin onFloor: 0 ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = Cabin sensorDesincronizedErrorMessage ]! !
+
+!ElevatorTest methodsFor: 'tests 4' stamp: 'HAW 10/4/2017 10:12:15'!
 test17ElevatorHasToEnterEmergencyIfJumpsFloors
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:3.
-	elevatorController cabinDoorClosed.
-	self 
-		should: [ elevatorController cabinOnFloor: 3 ]
-		raise: ElevatorEmergency 
-		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = 'Sensor de cabina desincronizado'. ]! !
+	elevator goUpPushedFromFloor:3.
+	door closed.
 
-!ElevatorControllerTest methodsFor: 'tests 4' stamp: 'HernanWilkinson 7/10/2011 17:48'!
+	self
+		should: [ cabin onFloor:  3 ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = Cabin sensorDesincronizedErrorMessage ]! !
+
+!ElevatorTest methodsFor: 'tests 4' stamp: 'HAW 10/4/2017 10:12:30'!
 test18ElevatorHasToEnterEmergencyIfDoorClosesAutomatically
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	self 
-		should: [ elevatorController cabinDoorClosed.]
-		raise: ElevatorEmergency 
-		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = 'Sensor de puerta desincronizado' ]! !
 
-!ElevatorControllerTest methodsFor: 'tests 4' stamp: 'HernanWilkinson 7/10/2011 17:48'!
+	self
+		should: [ door closed ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = CabinDoor sensorDesincronizedErrorMessage ]! !
+
+!ElevatorTest methodsFor: 'tests 4' stamp: 'HAW 10/4/2017 10:12:41'!
 test19ElevatorHasToEnterEmergencyIfDoorClosedSensorTurnsOnWhenClosed
 
-	| elevatorController |
-	elevatorController := ElevatorController new.
-	
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	self 
-		should: [elevatorController cabinDoorClosed.]
-		raise: ElevatorEmergency 
-		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = 'Sensor de puerta desincronizado'. ]! !
+	elevator goUpPushedFromFloor:1.
+	door closed.
 
-!ElevatorControllerTest methodsFor: 'tests 4' stamp: 'HernanWilkinson 7/10/2011 17:49'!
+	self
+		should: [ door closed ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = CabinDoor sensorDesincronizedErrorMessage ]! !
+
+!ElevatorTest methodsFor: 'tests 4' stamp: 'HAW 10/4/2017 10:12:56'!
 test20ElevatorHasToEnterEmergencyIfDoorClosesWhenOpening
-	| elevatorController |
-	elevatorController := ElevatorController new.
-		
-	elevatorController goUpPushedFromFloor:1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor:1.
-	self 
-		should: [elevatorController cabinDoorClosed.]
-		raise: ElevatorEmergency 
-		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = 'Sensor de puerta desincronizado'.]! !
+
+	elevator goUpPushedFromFloor:1.
+	door closed.
+	cabin onFloor: 1.
+
+	self
+		should: [ door closed ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :elevatorEmergency | self assert: elevatorEmergency messageText = CabinDoor sensorDesincronizedErrorMessage ]! !
+
+
+!ElevatorTest methodsFor: 'tests 2' stamp: 'HAW 10/4/2017 10:15:57'!
+test06DoorKeepsOpenedWhenOpeningIsRequested
+
+	self assert: door isOpened.
+
+	door open.
+
+	self assert: door isOpened.! !
+
+!ElevatorTest methodsFor: 'tests 2' stamp: 'HAW 10/4/2017 10:16:09'!
+test07DoorMustBeOpenedWhenCabinIsStoppedAndClosingDoors
+
+	elevator goUpPushedFromFloor: 1.
+
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isClosing.
+
+	door open.
+
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isOpening.
+
+	self assert: door isMotorMovingCounterClockwise.
+	self assert: cabin isMotorStopped
+
+! !
+
+!ElevatorTest methodsFor: 'tests 2' stamp: 'HAW 10/4/2017 10:16:04'!
+test08CanNotOpenDoorWhenCabinIsMoving
+
+	elevator goUpPushedFromFloor:1.
+	door closed.
+
+	self assert: elevator isWorking.
+	self assert: cabin isMoving.
+	self assert: door isClosed.
+
+	door open.
+
+	self assert: elevator isWorking.
+	self assert: cabin isMoving.
+	self assert: door isClosed.
+
+	self assert: door isMotorStopped.
+	self assert: cabin isMotorMovingClockwise
+	! !
+
+!ElevatorTest methodsFor: 'tests 2' stamp: 'HAW 10/4/2017 10:15:49'!
+test09DoorKeepsOpeneingWhenItIsOpeneing
+
+	elevator goUpPushedFromFloor:1.
+	door closed.
+	cabin onFloor: 1.
+
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isOpening.
+
+	door open.
+	
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isOpening.
+
+	self assert: door isMotorMovingCounterClockwise.
+	self assert: cabin isMotorStopped
+! !
+
+
+!ElevatorTest methodsFor: 'tests 5' stamp: 'HAW 10/4/2017 10:13:05'!
+test21CabinHasToStopOnTheFloorsOnItsWay
+
+	elevator goUpPushedFromFloor:1.
+	door closed.
+	elevator goUpPushedFromFloor:2.
+	cabin onFloor: 1.
+
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isOpening.
+
+	self assert: cabin currentFloorNumber equals: 1.
+
+	self assert: door isMotorMovingCounterClockwise.
+	self assert: cabin isMotorStopped
+! !
+
+!ElevatorTest methodsFor: 'tests 5' stamp: 'HAW 10/4/2017 10:13:09'!
+test22ElevatorCompletesAllTheRequests
+
+	elevator goUpPushedFromFloor:1.
+	door closed.
+	elevator goUpPushedFromFloor:2.
+	cabin onFloor: 1.
+	door opened.
+	cabin waitForPeopleTimedOut.
+	door closed.
+	cabin onFloor: 2.
+
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isOpening.
+
+	self assert: cabin currentFloorNumber equals: 2.
+
+	self assert: door isMotorMovingCounterClockwise.
+	self assert: cabin isMotorStopped
+! !
+
+!ElevatorTest methodsFor: 'tests 5' stamp: 'HAW 10/4/2017 10:13:15'!
+test23CabinHasToStopOnFloorsOnItsWayNoMatterHowTheyWellCalled
+
+	elevator goUpPushedFromFloor:2.
+	door closed.
+	elevator goUpPushedFromFloor:1.
+	cabin onFloor: 1.
+
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isOpening.
+
+	self assert: cabin currentFloorNumber equals: 1.
+
+	self assert: door isMotorMovingCounterClockwise.
+	self assert: cabin isMotorStopped
+! !
+
+!ElevatorTest methodsFor: 'tests 5' stamp: 'HAW 10/4/2017 10:13:19'!
+test24CabinHasToStopAndWaitForPeopleOnFloorsOnItsWayNoMatterHowTheyWellCalled
+
+	elevator goUpPushedFromFloor:2.
+	door closed.
+	elevator goUpPushedFromFloor:1.
+	cabin onFloor: 1.
+	door opened.
+	cabin waitForPeopleTimedOut.
+
+	self assert: elevator isWorking.
+	self assert: cabin isStopped.
+	self assert: door isClosing.
+
+	self assert: cabin currentFloorNumber equals: 1.
+
+	self assert: door isMotorMovingClockwise.
+	self assert: cabin isMotorStopped
+! !
+
+
+!ElevatorTest methodsFor: 'tests 1' stamp: 'HAW 10/4/2017 09:59:00'!
+test01ElevatorStartsIdleWithDoorOpenOnFloorZero
+
+	self assert: elevator isIdle.
+	self assert: cabin isStopped.
+	self assert: door isOpened.
+	self assert: cabin currentFloorNumber = 0
+! !
+
+!ElevatorTest methodsFor: 'tests 1' stamp: 'HAW 10/4/2017 10:00:49'!
+test02CabinDoorStartsClosingWhenElevatorGetsCalled
+
+	elevator goUpPushedFromFloor: 1.
+
+	self deny: elevator isIdle.
+	self assert: elevator isWorking.
+
+	self assert: cabin isStopped.
+	self deny: cabin isMoving.
+
+	self deny: door isOpened.
+	self deny: door isOpening.
+	self assert: door isClosing.
+	self deny: door isClosed.
+
+	self assert: door isMotorMovingClockwise.
+	self assert: cabin isMotorStopped
+! !
+
+!ElevatorTest methodsFor: 'tests 1' stamp: 'HAW 10/4/2017 10:01:22'!
+test03CabinStartsMovingWhenDoorGetsClosed
+
+	elevator goUpPushedFromFloor:1.
+	door closed.
+
+	self deny: elevator isIdle.
+	self assert: elevator isWorking.
+
+	self deny: cabin isStopped.
+	self assert: cabin isMoving.
+
+	self deny: door isOpened.
+	self deny: door isOpening.
+	self deny: door isClosing.
+	self assert: door isClosed.
+
+	self assert: door isMotorStopped.
+	self assert: cabin isMotorMovingClockwise.! !
+
+!ElevatorTest methodsFor: 'tests 1' stamp: 'HAW 10/4/2017 10:05:03'!
+test04CabinStopsAndStartsOpeningDoorWhenGetsToDestination
+
+	elevator goUpPushedFromFloor: 1.
+	door closed.
+	cabin onFloor:  1.
+
+	self deny: elevator isIdle.
+	self assert: elevator isWorking.
+
+	self assert: cabin isStopped.
+	self deny: cabin isMoving.
+
+	self deny: door isOpened.
+	self assert: door isOpening.
+	self deny: door isClosing.
+	self deny: door isClosed.
+
+	self assert: cabin currentFloorNumber = 1.
+
+	self assert: door isMotorMovingCounterClockwise.
+	self assert: cabin isMotorStopped.
+
+! !
+
+!ElevatorTest methodsFor: 'tests 1' stamp: 'HAW 10/4/2017 10:05:16'!
+test05ElevatorGetsIdleWhenDoorGetOpened
+
+	elevator goUpPushedFromFloor: 1.
+	door closed.
+	cabin onFloor:  1.
+	door opened.
+
+	self assert: elevator isIdle.
+	self deny: elevator isWorking.
+
+	self assert: cabin isStopped.
+	self deny: cabin isMoving.
+
+	self assert: door isOpened.
+	self deny: door isOpening.
+	self deny: door isClosing.
+	self deny: door isClosed.
+
+	self assert: cabin currentFloorNumber = 1.
+
+	self assert: door isMotorStopped.
+	self assert: cabin isMotorStopped.
+! !
+
+
+!ElevatorTest methodsFor: 'setup' stamp: 'HAW 10/4/2017 09:59:22'!
+setUp
+
+	elevator := Elevator new.
+	cabin := elevator cabin.
+	door := cabin door.! !
 
 
-!classDefinition: #ElevatorControllerViewTest category: #'ElevatorConsole-Ejercicio'!
-TestCase subclass: #ElevatorControllerViewTest
-	instanceVariableNames: ''
+!classDefinition: #ElevatorViewTest category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+TestCase subclass: #ElevatorViewTest
+	instanceVariableNames: 'elevator door cabin'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!ElevatorControllerViewTest methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 18:47'!
+!ElevatorViewTest methodsFor: 'testing' stamp: 'HAW 10/4/2017 12:44:01'!
 test01ElevatorControllerConsoleTracksDoorClosingState
 
-	| elevatorController elevatorControllerConsole readStream |
+	| elevatorConsole readStream |
 	
-	elevatorController := ElevatorController new.
-	elevatorControllerConsole := ElevatorControllerConsole of: elevatorController.
+	elevatorConsole := ElevatorConsole of: elevator.
 		
-	elevatorController goUpPushedFromFloor: 1.
+	elevator goUpPushedFromFloor: 1.
 				
-	readStream := elevatorControllerConsole consoleReadStream.
+	readStream := elevatorConsole consoleReadStream.
 
 	self assert: 'Puerta Cerrandose' = readStream nextLine.
 	self assert: readStream atEnd! !
 
-!ElevatorControllerViewTest methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 18:49'!
+!ElevatorViewTest methodsFor: 'testing' stamp: 'HAW 10/4/2017 12:43:51'!
 test02ElevatorControllerConsoleTracksCabinState
 
-	| elevatorController elevatorControllerConsole readStream |
+	| elevatorConsole readStream |
 	
-	elevatorController := ElevatorController new.
-	elevatorControllerConsole := ElevatorControllerConsole of: elevatorController.
+	elevatorConsole := ElevatorConsole of: elevator.
 		
-	elevatorController goUpPushedFromFloor: 1.
-	elevatorController cabinDoorClosed.
-					
-	readStream := elevatorControllerConsole consoleReadStream.
+	elevator goUpPushedFromFloor: 1.
+	door closed.
+			
+	readStream := elevatorConsole consoleReadStream.
 
 	self assert: 'Puerta Cerrandose' = readStream nextLine.
 	self assert: 'Puerta Cerrada' = readStream nextLine.
@@ -474,19 +482,18 @@ test02ElevatorControllerConsoleTracksCabinState
 	self assert: readStream atEnd
 ! !
 
-!ElevatorControllerViewTest methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 18:50'!
+!ElevatorViewTest methodsFor: 'testing' stamp: 'HAW 10/4/2017 12:44:46'!
 test03ElevatorControllerConsoleTracksCabinAndDoorStateChanges
 
-	| elevatorController elevatorControllerConsole readStream |
+	| elevatorConsole readStream |
 	
-	elevatorController := ElevatorController new.
-	elevatorControllerConsole := ElevatorControllerConsole of: elevatorController.
+	elevatorConsole := ElevatorConsole of: elevator.
 		
-	elevatorController goUpPushedFromFloor: 1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor: 1.  
+	elevator goUpPushedFromFloor: 1.
+	door closed.
+	cabin onFloor: 1.  
 					
-	readStream := elevatorControllerConsole consoleReadStream.
+	readStream := elevatorConsole consoleReadStream.
 
 	self assert: 'Puerta Cerrandose' = readStream nextLine.
 	self assert: 'Puerta Cerrada' = readStream nextLine.
@@ -496,20 +503,19 @@ test03ElevatorControllerConsoleTracksCabinAndDoorStateChanges
 	self assert: readStream atEnd
 ! !
 
-!ElevatorControllerViewTest methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 19:00'!
+!ElevatorViewTest methodsFor: 'testing' stamp: 'HAW 10/4/2017 12:45:42'!
 test04ElevatorControllerCanHaveMoreThanOneView
  
-	| elevatorController elevatorControllerConsole readStream elevatorControllerStatusView |
+	| elevatorConsole readStream elevatorStatusView |
 	
-	elevatorController := ElevatorController new.
-	elevatorControllerConsole := ElevatorControllerConsole of: elevatorController.
-	elevatorControllerStatusView := ElevatorControllerStatusView of: elevatorController.
+	elevatorConsole := ElevatorConsole of: elevator.
+	elevatorStatusView := ElevatorStatusView of: elevator.
 		
-	elevatorController goUpPushedFromFloor: 1.
-	elevatorController cabinDoorClosed.
-	elevatorController cabinOnFloor: 1.  
-					
-	readStream := elevatorControllerConsole consoleReadStream.
+	elevator goUpPushedFromFloor: 1.
+	door closed.
+	cabin onFloor: 1.  
+		
+	readStream := elevatorConsole consoleReadStream.
 
 	self assert: 'Puerta Cerrandose' = readStream nextLine.
 	self assert: 'Puerta Cerrada' = readStream nextLine.
@@ -518,839 +524,1270 @@ test04ElevatorControllerCanHaveMoreThanOneView
 	self assert: 'Puerta Abriendose' = readStream nextLine.
 	self assert: readStream atEnd.
 
-	self assert: 'Stopped' = elevatorControllerStatusView cabinFieldModel.
-	self assert: 'Opening' = elevatorControllerStatusView cabinDoorFieldModel! !
+	self assert: 'Stopped' = elevatorStatusView cabinFieldModel.
+	self assert: 'Opening' = elevatorStatusView cabinDoorFieldModel! !
+
+
+!ElevatorViewTest methodsFor: 'setup' stamp: 'HAW 10/4/2017 13:50:13'!
+setUp
+
+	elevator := Elevator new.
+	cabin := elevator cabin.
+	door := cabin door.! !
 
 
-!classDefinition: #CabinDoorState category: #'ElevatorConsole-Ejercicio'!
-Object subclass: #CabinDoorState
-	instanceVariableNames: 'elevatorController'
+!classDefinition: #Cabin category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #Cabin
+	instanceVariableNames: 'elevator state door motor currentFloorNumber observers'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinDoorState methodsFor: 'initialization' stamp: 'HernanWilkinson 7/15/2011 17:41'!
-initializeOf: anElevatorController 
+!Cabin methodsFor: 'initialization' stamp: 'a-lavia 10/18/2017 03:50:32'!
+initializeOf: anElevator
+
+	elevator := anElevator.
+	door := CabinDoor of: self.
+	motor := Motor new.
+	currentFloorNumber := 0.
+	state := CabinStoppedState for: self.
+	observers := OrderedCollection new.	! !
+
+
+!Cabin methodsFor: 'actions' stamp: 'HAW 10/3/2017 16:48:24'!
+stop
 	
-	elevatorController := anElevatorController ! !
+	motor stop.
+	self makeStopped! !
+
+!Cabin methodsFor: 'actions' stamp: 'HAW 10/3/2017 19:37:43'!
+waitForPeople
+	
+	"TODO: Faltan tests, por ejemplo para asertar que solo lo puede hacer si esta parada - Hernan"
+	self makeWaitingForPeople
+! !
 
 
-!CabinDoorState methodsFor: 'visitor accepting' stamp: 'HernanWilkinson 7/15/2011 19:01'!
-accept: aCabinDoorVisitor
+!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/18/2017 03:52:35'!
+makeMoving
+	
+	state := CabinMovingState for: self.
+	self notify.! !
+
+!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/18/2017 03:52:39'!
+makeStopped
+	
+	state := CabinStoppedState for: self.
+	self notify.! !
+
+!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/18/2017 03:52:41'!
+makeWaitingForPeople
+	
+	state := CabinWaitingForPeopleState for: self.
+	self notify.! !
+
+
+!Cabin methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 16:47:02'!
+onFloor: aFloorNumber
+
+	self assertIsMovingCorrectly: aFloorNumber.
+		
+	currentFloorNumber := aFloorNumber.
+	elevator hasToStopOnCurrentFloor ifTrue: [self reachedFloorToStop ]
+! !
+
+!Cabin methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 19:41:00'!
+waitForPeopleTimedOut
+	
+	self startClosingDoor.
+	self makeStopped.! !
+
+
+!Cabin methodsFor: 'floor' stamp: 'HAW 10/3/2017 16:01:27'!
+currentFloorNumber
+
+	^currentFloorNumber! !
+
+!Cabin methodsFor: 'floor' stamp: 'HAW 10/4/2017 10:30:50'!
+reachedFloorToStop
+	
+	elevator reachedFloorToStop.
+	self stop.
+	door startOpening! !
+
+
+!Cabin methodsFor: 'testing' stamp: 'HAW 10/4/2017 10:09:51'!
+hasToWaitForPeople
+	
+	^elevator hasFloorsToGo ! !
+
+!Cabin methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:19:46'!
+isMoving
+	
+	^state isMoving! !
+
+!Cabin methodsFor: 'testing' stamp: 'HAW 10/3/2017 15:49:56'!
+isStopped
+
+	^state isStopped! !
+
+!Cabin methodsFor: 'testing' stamp: 'HAW 10/3/2017 19:38:52'!
+isWaitingForPeople
+	
+	^state isWaitingForPeople ! !
+
+
+!Cabin methodsFor: 'assertions' stamp: 'HAW 10/3/2017 20:02:57'!
+assertIsMovingCorrectly: aFloorNumber
+
+	"Esta implementacion es muy sencilla y asume que se esta yendo para arriba siempre"
+	currentFloorNumber+1 ~=aFloorNumber ifTrue: [ self signalSensorDesincronized ]! !
+
+
+!Cabin methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:03:29'!
+sensorDesincronizedErrorMessage
+	
+	^self class sensorDesincronizedErrorMessage! !
+
+!Cabin methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:03:20'!
+signalSensorDesincronized
+	
+	self error: self sensorDesincronizedErrorMessage! !
+
+
+!Cabin methodsFor: 'door - closing' stamp: 'HAW 10/3/2017 21:24:54'!
+closeDoor
+	
+	^state closeDoor! !
+
+!Cabin methodsFor: 'door - closing' stamp: 'HAW 10/3/2017 19:52:04'!
+closeDoorWhenMoving
+	
+	"La puerta ya esta cerrada, no hay que hacer nada con este pedido - Hernan"! !
+
+!Cabin methodsFor: 'door - closing' stamp: 'HAW 10/3/2017 19:57:34'!
+closeDoorWhenStopped
+	
+	"Si estoy parado no me pueden cerrar la puerta - Hernan"! !
+
+!Cabin methodsFor: 'door - closing' stamp: 'HAW 10/4/2017 10:24:05'!
+closeDoorWhenWaitingForPeople
+	
+	door startClosing.
+	self makeStopped! !
+
+!Cabin methodsFor: 'door - closing' stamp: 'HAW 10/3/2017 16:13:11'!
+startClosingDoor
+	
+	door startClosing! !
+
+
+!Cabin methodsFor: 'door - sensor activation' stamp: 'HAW 10/4/2017 10:04:32'!
+doorClosed
+	
+	"Esto sirve solo porque siempre se esta yendo para arriba :-)"
+	motor moveClockwise.
+	self makeMoving.! !
+
+!Cabin methodsFor: 'door - sensor activation' stamp: 'HAW 10/4/2017 10:09:29'!
+doorOpened
+	
+	self hasToWaitForPeople ifTrue: [ self waitForPeople ] ifFalse: [ elevator jobDone]! !
+
+
+!Cabin methodsFor: 'motor - testing' stamp: 'HAW 10/3/2017 16:41:45'!
+isMotorMovingClockwise
+	
+	^motor isMovingClockwise ! !
+
+!Cabin methodsFor: 'motor - testing' stamp: 'HAW 10/3/2017 16:26:17'!
+isMotorStopped
+	
+	^motor isStopped! !
+
+
+!Cabin methodsFor: 'door' stamp: 'HAW 10/4/2017 09:59:53'!
+door
+
+	^door! !
+
+
+!Cabin methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/18/2017 04:00:33'!
+attach: anObserver
+
+	observers add: anObserver.! !
+
+!Cabin methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/18/2017 04:00:17'!
+notify
+
+	observers do: [ :anObserver | anObserver update: state]! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Cabin class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Cabin class
+	instanceVariableNames: ''!
+
+!Cabin class methodsFor: 'instance creation' stamp: 'HAW 10/3/2017 15:49:25'!
+of: anElevator
+
+	^self new initializeOf: anElevator! !
+
+
+!Cabin class methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:00:48'!
+sensorDesincronizedErrorMessage
+	
+	^'Sensor de cabina desincronizado'! !
+
+
+!classDefinition: #CabinDoor category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #CabinDoor
+	instanceVariableNames: 'cabin state motor observers'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+
+!CabinDoor methodsFor: 'initialization' stamp: 'a-lavia 10/18/2017 03:50:41'!
+initializeOf: aCabin
+
+	cabin := aCabin.
+	motor := Motor new.
+	state :=CabinDoorOpenedState for: self.
+	observers := OrderedCollection new.! !
+
+
+!CabinDoor methodsFor: 'actions' stamp: 'HAW 10/4/2017 10:21:35'!
+close
+
+	cabin closeDoor.
+	
+	! !
+
+!CabinDoor methodsFor: 'actions' stamp: 'HAW 10/3/2017 17:00:25'!
+open
+	
+	state open! !
+
+!CabinDoor methodsFor: 'actions' stamp: 'HAW 10/4/2017 10:28:32'!
+startClosing
+	
+	motor moveClockwise.
+	self makeClosing	! !
+
+!CabinDoor methodsFor: 'actions' stamp: 'HAW 10/4/2017 10:28:35'!
+startOpening
+	
+	motor moveCounterClockwise.
+	self makeOpening	! !
+
+
+!CabinDoor methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 17:04:32'!
+openWhenClosed
+	
+	"Cuando la puerta esta cerrada no se puede abrir - Hernan"! !
+
+!CabinDoor methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 17:03:09'!
+openWhenClosing
+	
+	motor stop.
+	self startOpening
+	! !
+
+!CabinDoor methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 17:01:19'!
+openWhenOpened
+	
+	"Ya estoy abierta, no hago nada - Hernan"! !
+
+!CabinDoor methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 17:06:04'!
+openWhenOpening
+	
+	"No hago nada porque ya me estoy abriendo - Hernan"! !
+
+
+!CabinDoor methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 16:36:05'!
+closed
+	
+	state closed! !
+
+!CabinDoor methodsFor: 'sensor activation' stamp: 'HAW 10/4/2017 10:06:46'!
+opened
+	
+	"TODO: Faltan tests para reaccionar distinto dependiendo del estado - Hernan"
+	
+	motor stop.
+	self makeOpened.
+	
+	cabin doorOpened ! !
+
+
+!CabinDoor methodsFor: 'sensor activation - private' stamp: 'HAW 10/3/2017 20:09:21'!
+closedWhenClosed
+	
+	self signalSensorDesincronized ! !
+
+!CabinDoor methodsFor: 'sensor activation - private' stamp: 'HAW 10/4/2017 10:04:22'!
+closedWhenClosing
+	
+	motor stop.
+	self makeClosed.
+	
+	cabin doorClosed.! !
+
+!CabinDoor methodsFor: 'sensor activation - private' stamp: 'HAW 10/3/2017 20:08:10'!
+closedWhenOpened
+	
+	self signalSensorDesincronized! !
+
+!CabinDoor methodsFor: 'sensor activation - private' stamp: 'HAW 10/3/2017 20:10:00'!
+closedWhenOpening
+	
+	self signalSensorDesincronized ! !
+
+
+!CabinDoor methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:22:23'!
+isClosed
+	
+	^state isClosed! !
+
+!CabinDoor methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:21:40'!
+isClosing
+	
+	^state isClosing! !
+
+!CabinDoor methodsFor: 'testing' stamp: 'HAW 10/3/2017 15:58:57'!
+isOpened
+
+	^state isOpened ! !
+
+!CabinDoor methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:20:56'!
+isOpening
+	
+	^state isOpening ! !
+
+
+!CabinDoor methodsFor: 'motor - testing' stamp: 'HAW 10/3/2017 16:25:35'!
+isMotorMovingClockwise
+	
+	^motor isMovingClockwise! !
+
+!CabinDoor methodsFor: 'motor - testing' stamp: 'HAW 10/3/2017 16:52:13'!
+isMotorMovingCounterClockwise
+	
+	^motor isMovingCounterClockwise! !
+
+!CabinDoor methodsFor: 'motor - testing' stamp: 'HAW 10/3/2017 16:41:21'!
+isMotorStopped
+	
+	^motor isStopped! !
+
+
+!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/18/2017 03:38:24'!
+makeClosed
+	
+	state := CabinDoorClosedState for: self.
+	self notify.! !
+
+!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/18/2017 03:38:28'!
+makeClosing
+	
+	state := CabinDoorClosingState for: self.
+	self notify.! !
+
+!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/18/2017 03:38:31'!
+makeOpened
+	
+	state := CabinDoorOpenedState for: self.
+	self notify.! !
+
+!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/18/2017 03:38:34'!
+makeOpening
+	
+	state := CabinDoorOpeningState for: self.
+	self notify.! !
+
+
+!CabinDoor methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:08:30'!
+sensorDesincronizedErrorMessage
+	
+	^self class sensorDesincronizedErrorMessage ! !
+
+!CabinDoor methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:08:18'!
+signalSensorDesincronized
+	
+	self error: self sensorDesincronizedErrorMessage! !
+
+
+!CabinDoor methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/18/2017 04:00:23'!
+attach: anObserver
+
+	observers add: anObserver.! !
+
+!CabinDoor methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/18/2017 04:00:27'!
+notify
+
+	observers do: [ :anObserver | anObserver update: state]! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CabinDoor class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+CabinDoor class
+	instanceVariableNames: ''!
+
+!CabinDoor class methodsFor: 'instance creation' stamp: 'HAW 10/3/2017 15:56:58'!
+of: aCabin
+
+	^self new initializeOf: aCabin ! !
+
+
+!CabinDoor class methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:08:48'!
+sensorDesincronizedErrorMessage
+	
+	^'Sensor de puerta desincronizado'! !
+
+
+!classDefinition: #CabinDoorState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #CabinDoorState
+	instanceVariableNames: 'door'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+
+!CabinDoorState methodsFor: 'initialization' stamp: 'HAW 10/3/2017 16:42:05'!
+initializeFor: aCabinDoor
+
+	door := aCabinDoor ! !
+
+
+!CabinDoorState methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 20:25:19'!
+closed
 
 	self subclassResponsibility ! !
 
 
-!CabinDoorState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:45'!
+!CabinDoorState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:23:58'!
 isClosed
 
-	^ false! !
+	self subclassResponsibility ! !
 
-!CabinDoorState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:45'!
+!CabinDoorState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:24:07'!
 isClosing
 
-	^false! !
+	self subclassResponsibility ! !
 
-!CabinDoorState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:45'!
-isOpened 
+!CabinDoorState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:24:03'!
+isOpened
 
-	^false! !
+	self subclassResponsibility ! !
 
-!CabinDoorState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:46'!
+!CabinDoorState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:24:10'!
 isOpening
 
-	^ false! !
+	self subclassResponsibility ! !
+
+
+!CabinDoorState methodsFor: 'actions' stamp: 'HAW 10/3/2017 20:25:40'!
+open
+
+	self subclassResponsibility ! !
+
+
+!CabinDoorState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:17:24'!
+accept: aVisitor
+
+	self subclassResponsibility ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CabinDoorState class' category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: 'CabinDoorState class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 CabinDoorState class
 	instanceVariableNames: ''!
 
-!CabinDoorState class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/15/2011 17:41'!
-of: anElevatorController 
-	
-	^ self new initializeOf: anElevatorController   ! !
+!CabinDoorState class methodsFor: 'instance creation' stamp: 'HAW 10/3/2017 15:57:56'!
+for: aCabinDoor
+
+	^self new initializeFor: aCabinDoor ! !
 
 
-!classDefinition: #CabinDoorClosedState category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: #CabinDoorClosedState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 CabinDoorState subclass: #CabinDoorClosedState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinDoorClosedState methodsFor: 'visitor accepting' stamp: 'HernanWilkinson 7/15/2011 18:52'!
-accept: aCabinDoorStateVisitor
+!CabinDoorClosedState methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 20:26:47'!
+closed
+	
+	^door closedWhenClosed! !
 
-	aCabinDoorStateVisitor visitCabinDoorClosed: self! !
 
-
-!CabinDoorClosedState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:46'!
+!CabinDoorClosedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:39:59'!
 isClosed
+	
+	^true! !
 
-	^ true! !
+!CabinDoorClosedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:39:46'!
+isClosing
+	
+	^false! !
+
+!CabinDoorClosedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:39:22'!
+isOpened
+	
+	^false! !
+
+!CabinDoorClosedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:39:33'!
+isOpening
+	
+	^false! !
+
+
+!CabinDoorClosedState methodsFor: 'actions' stamp: 'HAW 10/3/2017 20:26:58'!
+open
+	
+	^door openWhenClosed! !
+
+
+!CabinDoorClosedState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:06:38'!
+accept: aVisitor
+
+	aVisitor visitCabinDoorClosed: self! !
 
 
-!classDefinition: #CabinDoorClosingState category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: #CabinDoorClosingState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 CabinDoorState subclass: #CabinDoorClosingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinDoorClosingState methodsFor: 'visitor accepting' stamp: 'HernanWilkinson 7/15/2011 18:44'!
-accept: aCabinDoorStateVisitor
-
-	aCabinDoorStateVisitor visitCabinDoorClosing: self! !
-
-
-!CabinDoorClosingState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 17:55'!
-cabinDoorClosedWhenWorkingAndCabinStopped
+!CabinDoorClosingState methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 20:27:13'!
+closed
 	
-	^ elevatorController cabinDoorClosedWhenWorkingAndCabinStoppedAndCabinDoorStopped ! !
+	^door closedWhenClosing! !
 
 
-!CabinDoorClosingState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:46'!
-isClosing 
+!CabinDoorClosingState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:24:49'!
+isClosed
+	
+	^false! !
 
+!CabinDoorClosingState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:21:52'!
+isClosing
+	
 	^true! !
 
+!CabinDoorClosingState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:20:10'!
+isOpened
+	
+	^false! !
+
+!CabinDoorClosingState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:21:07'!
+isOpening
+	
+	^false! !
+
+
+!CabinDoorClosingState methodsFor: 'actions' stamp: 'HAW 10/3/2017 20:27:25'!
+open
+	
+	^door openWhenClosing! !
+
+
+!CabinDoorClosingState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:02:34'!
+accept: aVisitor
+
+	aVisitor visitCabinDoorClosing: self! !
+
 
-!classDefinition: #CabinDoorOpenedState category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: #CabinDoorOpenedState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 CabinDoorState subclass: #CabinDoorOpenedState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinDoorOpenedState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:43'!
-isOpened
+!CabinDoorOpenedState methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 20:27:34'!
+closed
 	
-	^ true! !
+	^door closedWhenOpened! !
 
 
-!CabinDoorOpenedState methodsFor: 'visitor accepting' stamp: 'HAW 10/4/2017 14:37:23'!
+!CabinDoorOpenedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:56:42'!
+isClosed
+	
+	^false! !
+
+!CabinDoorOpenedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:56:34'!
+isClosing
+	
+	^false! !
+
+!CabinDoorOpenedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 15:59:04'!
+isOpened
+
+	^true! !
+
+!CabinDoorOpenedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:56:27'!
+isOpening
+	
+	^false! !
+
+
+!CabinDoorOpenedState methodsFor: 'actions' stamp: 'HAW 10/3/2017 20:27:44'!
+open
+	
+	^door openWhenOpened! !
+
+
+!CabinDoorOpenedState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:17:52'!
 accept: aVisitor
 
-	aVisitor visitCabinOpened: self! !
+	aVisitor visitCabinDoorOpened: self! !
 
 
-!classDefinition: #CabinDoorOpeningState category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: #CabinDoorOpeningState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 CabinDoorState subclass: #CabinDoorOpeningState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinDoorOpeningState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 18:17'!
-cabinDoorClosedWhenWorkingAndCabinStopped
+!CabinDoorOpeningState methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 20:27:52'!
+closed
 	
-	^elevatorController cabinDoorClosedWhenWorkingAndCabinStoppedAndCabinDoorOpening! !
+	^door closedWhenOpening! !
 
 
-!CabinDoorOpeningState methodsFor: 'visitor accepting' stamp: 'HernanWilkinson 7/15/2011 18:55'!
-accept: aCabinDoorStateVisitor
-
-	aCabinDoorStateVisitor visitCabinDoorOpening: self! !
-
-
-!CabinDoorOpeningState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:15'!
-closeCabinDoorWhenWorkingAndCabinStopped
+!CabinDoorOpeningState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:51:22'!
+isClosed
 	
-	^elevatorController closeCabinDoorWhenWorkingAndCabinStoppedAndCabinDoorOpening! !
+	^false! !
+
+!CabinDoorOpeningState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:51:12'!
+isClosing
+	
+	^false! !
+
+!CabinDoorOpeningState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:50:53'!
+isOpened
+	
+	^false! !
+
+!CabinDoorOpeningState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:51:05'!
+isOpening
+	
+	^true! !
 
 
-!CabinDoorOpeningState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:46'!
-isOpening 
+!CabinDoorOpeningState methodsFor: 'actions' stamp: 'HAW 10/3/2017 20:27:59'!
+open
+	
+	^door openWhenOpening! !
 
-	^ true! !
+
+!CabinDoorOpeningState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:08:20'!
+accept: aVisitor
+
+	aVisitor visitCabinDoorOpening: self! !
 
 
-!classDefinition: #CabinState category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: #CabinState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 Object subclass: #CabinState
-	instanceVariableNames: 'elevatorController'
+	instanceVariableNames: 'cabin'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinState methodsFor: 'visitor accepting' stamp: 'HernanWilkinson 7/15/2011 19:01'!
-accept: aCabinStateVisitor
+!CabinState methodsFor: 'initialization' stamp: 'HAW 10/3/2017 15:53:27'!
+initializeFor: aCabin
+
+	cabin := aCabin ! !
+
+
+!CabinState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:28:43'!
+isMoving
+
+	self subclassResponsibility 
+	! !
+
+!CabinState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:28:51'!
+isStopped
+
+	self subclassResponsibility 
+	! !
+
+!CabinState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:28:59'!
+isWaitingForPeople
+
+	self subclassResponsibility 
+	! !
+
+
+!CabinState methodsFor: 'actions' stamp: 'HAW 10/3/2017 20:29:18'!
+closeDoor
 
 	self subclassResponsibility ! !
 
 
-!CabinState methodsFor: 'initialization' stamp: 'HernanWilkinson 7/15/2011 17:44'!
-initializeOf: anElevatorController 
-	
-	elevatorController := anElevatorController ! !
+!CabinState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:19:06'!
+accept: aVisitor
 
-
-!CabinState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:46'!
-isMoving
-
-	^ false! !
-
-!CabinState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:46'!
-isStopped
-
-	^ false! !
-
-!CabinState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:46'!
-isWaitingForPeople
-
-	^ false! !
+	self subclassResponsibility ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CabinState class' category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: 'CabinState class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 CabinState class
 	instanceVariableNames: ''!
 
-!CabinState class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/15/2011 17:44'!
-of: anElevatorController 
-	
-	^self new initializeOf: anElevatorController   ! !
+!CabinState class methodsFor: 'instance creation' stamp: 'HAW 10/3/2017 15:52:58'!
+for: aCabin
+
+	^self new initializeFor: aCabin! !
 
 
-!classDefinition: #CabinMovingState category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: #CabinMovingState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 CabinState subclass: #CabinMovingState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinMovingState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 18:17'!
-cabinDoorClosedWhenWorking
+!CabinMovingState methodsFor: 'actions' stamp: 'HAW 10/3/2017 19:51:03'!
+closeDoor
 	
-	^elevatorController cabinDoorClosedWhenWorkingAndCabinMoving! !
+	cabin closeDoorWhenMoving! !
 
 
-!CabinMovingState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:13'!
-closeCabinDoorWhenWorking
-
-	^ elevatorController closeCabinDoorWhenWorkingAndCabinMoving! !
-
-
-!CabinMovingState methodsFor: 'visitor accepting' stamp: 'HernanWilkinson 7/15/2011 18:54'!
-accept: aCabinStateVisitor
-
-	aCabinStateVisitor visitCabinMoving: self! !
-
-
-!CabinMovingState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:47'!
+!CabinMovingState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:39:12'!
 isMoving
-
+	
 	^true! !
 
+!CabinMovingState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:39:02'!
+isStopped
+	
+	^false! !
+
+!CabinMovingState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:29:37'!
+isWaitingForPeople
+
+	^false! !
+
+
+!CabinMovingState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:07:12'!
+accept: aVisitor
+
+	aVisitor visitCabinMoving: self! !
+
 
-!classDefinition: #CabinStoppedState category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: #CabinStoppedState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 CabinState subclass: #CabinStoppedState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinStoppedState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:14'!
-closeCabinDoorWhenWorking
+!CabinStoppedState methodsFor: 'actions' stamp: 'HAW 10/3/2017 19:56:06'!
+closeDoor
 	
-	^elevatorController closeCabinDoorWhenWorkingAndCabinStopped! !
+	cabin closeDoorWhenStopped! !
 
 
-!CabinStoppedState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:43'!
+!CabinStoppedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:19:55'!
+isMoving
+	
+	^false! !
+
+!CabinStoppedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 15:53:39'!
 isStopped
-	
-	^ true! !
+
+	^true! !
+
+!CabinStoppedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:29:42'!
+isWaitingForPeople
+
+	^false! !
 
 
-!CabinStoppedState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 17:55'!
-cabinDoorClosedWhenWorking
-	
-	^ elevatorController cabinDoorClosedWhenWorkingAndCabinStopped! !
+!CabinStoppedState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:07:50'!
+accept: aVisitor
 
-!CabinStoppedState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 18:01'!
-cabinDoorOpenedWhenWorking
-	
-	^elevatorController cabinDoorOpenedWhenWorkingAndCabinStopped! !
-
-
-!CabinStoppedState methodsFor: 'visitor accepting' stamp: 'HernanWilkinson 7/15/2011 18:55'!
-accept: aCabinStateVisitor
-
-	aCabinStateVisitor visitCabinStopped: self! !
+	aVisitor visitCabinStopped: self! !
 
 
-!classDefinition: #CabinWaitingForPeopleState category: #'ElevatorConsole-Ejercicio'!
+!classDefinition: #CabinWaitingForPeopleState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 CabinState subclass: #CabinWaitingForPeopleState
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinWaitingForPeopleState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:11'!
-closeCabinDoorWhenWorking
+!CabinWaitingForPeopleState methodsFor: 'actions' stamp: 'HAW 10/3/2017 19:44:54'!
+closeDoor
 	
-	^ elevatorController closeCabinDoorWhenWorkingAndWaitingForPeople! !
+	cabin closeDoorWhenWaitingForPeople! !
 
 
-!CabinWaitingForPeopleState methodsFor: 'cabin events' stamp: 'HernanWilkinson 7/15/2011 18:08'!
-waitForPeopleTimedOutWhenWorking
+!CabinWaitingForPeopleState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:29:50'!
+isMoving
+
+	^false! !
+
+!CabinWaitingForPeopleState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:30:07'!
+isStopped
+
+	^false! !
+
+!CabinWaitingForPeopleState methodsFor: 'testing' stamp: 'HAW 10/3/2017 19:39:02'!
+isWaitingForPeople
 	
-	^elevatorController waitForPeopleTimedOutWhenWorkingAndCabinWaitingForPeople! !
-
-
-!CabinWaitingForPeopleState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:47'!
-isWaitingForPeople 
-
 	^true! !
 
 
-!CabinWaitingForPeopleState methodsFor: 'visitor accepting' stamp: 'HAW 10/4/2017 14:38:22'!
+!CabinWaitingForPeopleState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:19:42'!
 accept: aVisitor
 
 	aVisitor visitCabinWaitingForPeople: self! !
 
 
-!classDefinition: #ElevatorController category: #'ElevatorConsole-Ejercicio'!
-Object subclass: #ElevatorController
-	instanceVariableNames: 'state cabinState cabinDoorState cabinFloorNumber floorsToGo'
+!classDefinition: #Elevator category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #Elevator
+	instanceVariableNames: 'cabin state floorsToGo observers'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!ElevatorController methodsFor: 'cabin events by state' stamp: 'HernanWilkinson 7/15/2011 18:08'!
-waitForPeopleTimedOutWhenWorking
+!Elevator methodsFor: 'initialization' stamp: 'a-lavia 10/18/2017 03:50:51'!
+initialize
+
+	cabin := Cabin of: self.
+	floorsToGo := SortedCollection new.
+	state := ElevatorIdleState for: self.
+	observers := OrderedCollection new.! !
+
+
+!Elevator methodsFor: 'state change' stamp: 'a-lavia 10/18/2017 03:58:36'!
+makeIdle
 	
-	cabinState waitForPeopleTimedOutWhenWorking ! !
+	state := ElevatorIdleState for: self.
+	"self notify."! !
 
-!ElevatorController methodsFor: 'cabin events by state' stamp: 'HernanWilkinson 7/15/2011 18:28'!
-waitForPeopleTimedOutWhenWorkingAndCabinWaitingForPeople
-
-	self stopCabin.
-	self startClosingDoor! !
-
-
-!ElevatorController methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 17:54'!
-cabinDoorClosed
+!Elevator methodsFor: 'state change' stamp: 'a-lavia 10/18/2017 03:58:31'!
+makeWorking
 	
-	^state cabinDoorClosed ! !
-
-!ElevatorController methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 18:00'!
-cabinDoorOpened
-	
-	^ state cabinDoorOpened ! !
+	state := ElevatorWorkingState for: self.
+	"self notify."! !
 
 
-!ElevatorController methodsFor: 'initialization' stamp: 'HernanWilkinson 7/15/2011 19:05'!
-initialize 
-
-	self stopWorking.
-	self stopCabin.
-	self stopCabinDoorMotorWhenOpened.
-	cabinFloorNumber := 0.
-	floorsToGo := SortedCollection new.! !
-
-
-!ElevatorController methodsFor: 'cabin door state' stamp: 'HernanWilkinson 7/15/2011 17:48'!
-isCabinDoorClosed
-	
-	^ cabinDoorState isClosed ! !
-
-!ElevatorController methodsFor: 'cabin door state' stamp: 'HernanWilkinson 7/15/2011 17:48'!
-isCabinDoorClosing
-	
-	^ cabinDoorState isClosing ! !
-
-!ElevatorController methodsFor: 'cabin door state' stamp: 'HernanWilkinson 7/15/2011 17:43'!
-isCabinDoorOpened
-	
-	^ cabinDoorState isOpened! !
-
-!ElevatorController methodsFor: 'cabin door state' stamp: 'HernanWilkinson 7/15/2011 17:47'!
-isCabinDoorOpening
-	
-	^ cabinDoorState isOpening ! !
-
-!ElevatorController methodsFor: 'cabin door state' stamp: 'HernanWilkinson 7/15/2011 19:07'!
-startClosingDoor
-	
-	cabinDoorState := CabinDoorClosingState of: self! !
-
-!ElevatorController methodsFor: 'cabin door state' stamp: 'HernanWilkinson 7/15/2011 19:07'!
-startOpeningCabinDoor
-	
-	cabinDoorState := CabinDoorOpeningState of: self! !
-
-!ElevatorController methodsFor: 'cabin door state' stamp: 'HernanWilkinson 7/15/2011 19:07'!
-stopCabinDoorMotorWhenClosed
-	
-	cabinDoorState := CabinDoorClosedState of: self! !
-
-!ElevatorController methodsFor: 'cabin door state' stamp: 'HernanWilkinson 7/15/2011 19:07'!
-stopCabinDoorMotorWhenOpened
-	
-	cabinDoorState := CabinDoorOpenedState of: self! !
-
-
-!ElevatorController methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:09'!
-closeCabinDoor
-	
-	^ state closeCabinDoor ! !
-
-!ElevatorController methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 17:50'!
+!Elevator methodsFor: 'actions' stamp: 'HAW 10/3/2017 16:07:55'!
 goUpPushedFromFloor: aFloorNumber
 
-	^ state goUpPushedFromFloor: aFloorNumber   ! !
-
-!ElevatorController methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:04'!
-openCabinDoor
-
-	^state openCabinDoor ! !
+	^state goUpPushedFromFloor: aFloorNumber! !
 
 
-!ElevatorController methodsFor: 'cabin state' stamp: 'HernanWilkinson 7/15/2011 17:43'!
-cabinFloorNumber
-	
-	^ cabinFloorNumber! !
-
-!ElevatorController methodsFor: 'cabin state' stamp: 'HernanWilkinson 7/15/2011 17:48'!
-isCabinMoving
-
-	^ cabinState isMoving ! !
-
-!ElevatorController methodsFor: 'cabin state' stamp: 'HernanWilkinson 7/15/2011 17:42'!
-isCabinStopped
-
-	^ cabinState isStopped! !
-
-!ElevatorController methodsFor: 'cabin state' stamp: 'HernanWilkinson 7/15/2011 17:48'!
-isCabinWaitingForPeople 
-
-	^ cabinState isWaitingForPeople ! !
-
-!ElevatorController methodsFor: 'cabin state' stamp: 'HernanWilkinson 7/15/2011 19:07'!
-startMovingCabin
-	
-	cabinState := CabinMovingState of: self! !
-
-!ElevatorController methodsFor: 'cabin state' stamp: 'HernanWilkinson 7/15/2011 19:07'!
-stopCabin
-	
-	cabinState := CabinStoppedState of: self! !
-
-!ElevatorController methodsFor: 'cabin state' stamp: 'HernanWilkinson 7/15/2011 19:07'!
-waitForPeopleToCameInsideCabin
-	
-	cabinState := CabinWaitingForPeopleState of: self! !
-
-
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:12'!
-closeCabinDoorWhenIdle
-	
-	! !
-
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:10'!
-closeCabinDoorWhenWorking
-	
-	^ cabinState closeCabinDoorWhenWorking ! !
-
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:13'!
-closeCabinDoorWhenWorkingAndCabinMoving
-	
-	! !
-
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:14'!
-closeCabinDoorWhenWorkingAndCabinStopped
-
-	^ cabinDoorState closeCabinDoorWhenWorkingAndCabinStopped ! !
-
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:15'!
-closeCabinDoorWhenWorkingAndCabinStoppedAndCabinDoorOpening
-	
-	! !
-
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:28'!
-closeCabinDoorWhenWorkingAndWaitingForPeople
-	
-	self stopCabin.
-	self startClosingDoor! !
-
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:29'!
+!Elevator methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 16:10:27'!
 goUpPushedFromFloorWhenIdle: aFloorNumber
 
-		floorsToGo add: aFloorNumber.
-		self startWorking.
-		self startClosingDoor ! !
+	self startWorkingGoingTo: aFloorNumber ! !
 
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:06'!
-goUpPushedFromFloorWhenWorking: aFloorNumber
+!Elevator methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 19:36:33'!
+goUpPushedFromFloorWhenWorking: aFloorNumber 
+
+	self queFloorToGo: aFloorNumber ! !
+
+!Elevator methodsFor: 'actions - private' stamp: 'HAW 10/4/2017 10:10:09'!
+jobDone
+	
+	self makeIdle ! !
+
+!Elevator methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 16:11:45'!
+queFloorToGo: aFloorNumber
 
 	floorsToGo add: aFloorNumber ! !
 
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:04'!
-openCabinDoorWhenIdle
-
-	! !
-
-!ElevatorController methodsFor: 'button events by state' stamp: 'HernanWilkinson 7/15/2011 18:05'!
-openCabinDoorWhenWorking
-	! !
-
-
-!ElevatorController methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 18:03'!
-hasFloorToGo
+!Elevator methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 16:47:57'!
+reachedFloorToStop
 	
-	^ floorsToGo notEmpty ! !
+	floorsToGo removeFirst ! !
+
+!Elevator methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 16:11:18'!
+startWorkingGoingTo: aFloorNumber
+
+	self queFloorToGo: aFloorNumber.
+	self makeWorking.
+	cabin startClosingDoor.! !
 
 
-!ElevatorController methodsFor: 'cabin events' stamp: 'HernanWilkinson 7/15/2011 18:34'!
-cabinOnFloor: aFloorNumber
-
-	aFloorNumber<cabinFloorNumber ifTrue: [ ElevatorEmergency signal: 'Sensor de cabina desincronizado' ].
-	cabinFloorNumber+1 = aFloorNumber ifFalse: [ ElevatorEmergency signal: 'Sensor de cabina desincronizado' ].
-		
-	cabinFloorNumber := aFloorNumber.
-	floorsToGo first = aFloorNumber ifTrue: [ 
-		floorsToGo removeFirst.
-		self stopCabin.
-		self startOpeningCabinDoor ]
-! !
-
-!ElevatorController methodsFor: 'cabin events' stamp: 'HernanWilkinson 7/15/2011 18:07'!
-waitForPeopleTimedOut
+!Elevator methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:55:48'!
+hasFloorsToGo
 	
-	^ state waitForPeopleTimedOut ! !
+	^floorsToGo notEmpty! !
 
+!Elevator methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:46:50'!
+hasToStopOnCurrentFloor
+	
+	^floorsToGo first = cabin currentFloorNumber ! !
 
-!ElevatorController methodsFor: 'controller state' stamp: 'HernanWilkinson 7/15/2011 17:42'!
+!Elevator methodsFor: 'testing' stamp: 'HAW 10/3/2017 15:45:45'!
 isIdle
-	
-	^ state isIdle ! !
 
-!ElevatorController methodsFor: 'controller state' stamp: 'HernanWilkinson 7/15/2011 17:48'!
+	^state isIdle! !
+
+!Elevator methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:18:55'!
 isWorking
 	
-	^ state isWorking ! !
+	^state isWorking! !
 
-!ElevatorController methodsFor: 'controller state' stamp: 'HernanWilkinson 7/15/2011 18:29'!
-startWorking
+
+!Elevator methodsFor: 'cabin' stamp: 'HAW 10/4/2017 09:59:35'!
+cabin
 	
-	state := ElevatorControllerWorkingState of: self! !
-
-!ElevatorController methodsFor: 'controller state' stamp: 'HernanWilkinson 7/15/2011 18:28'!
-stopWorking
-	
-	state := ElevatorControllerIdleState of: self! !
+	^cabin! !
 
 
-!ElevatorController methodsFor: 'cabin door events by state' stamp: 'HernanWilkinson 7/15/2011 18:16'!
-cabinDoorClosedWhenIdle
-	
-	ElevatorEmergency signal:  'Sensor de puerta desincronizado' ! !
+!Elevator methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/18/2017 04:00:44'!
+attach: anObserver
 
-!ElevatorController methodsFor: 'cabin door events by state' stamp: 'HernanWilkinson 7/15/2011 17:54'!
-cabinDoorClosedWhenWorking
-	
-	^ cabinState cabinDoorClosedWhenWorking ! !
+	observers add: anObserver.! !
 
-!ElevatorController methodsFor: 'cabin door events by state' stamp: 'HernanWilkinson 7/15/2011 18:17'!
-cabinDoorClosedWhenWorkingAndCabinMoving
-	
-	ElevatorEmergency signal:  'Sensor de puerta desincronizado'   ! !
+!Elevator methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/18/2017 04:00:12'!
+notify
 
-!ElevatorController methodsFor: 'cabin door events by state' stamp: 'HernanWilkinson 7/15/2011 17:55'!
-cabinDoorClosedWhenWorkingAndCabinStopped
-	
-	^ cabinDoorState cabinDoorClosedWhenWorkingAndCabinStopped ! !
-
-!ElevatorController methodsFor: 'cabin door events by state' stamp: 'HernanWilkinson 7/15/2011 18:18'!
-cabinDoorClosedWhenWorkingAndCabinStoppedAndCabinDoorOpening
-	
-	ElevatorEmergency signal:  'Sensor de puerta desincronizado'   ! !
-
-!ElevatorController methodsFor: 'cabin door events by state' stamp: 'HernanWilkinson 7/15/2011 18:27'!
-cabinDoorClosedWhenWorkingAndCabinStoppedAndCabinDoorStopped
-	
-	self stopCabinDoorMotorWhenClosed.
-	self startMovingCabin
-	! !
-
-!ElevatorController methodsFor: 'cabin door events by state' stamp: 'HernanWilkinson 7/15/2011 18:01'!
-cabinDoorOpenedWhenWorking
-
-	^ cabinState cabinDoorOpenedWhenWorking ! !
-
-!ElevatorController methodsFor: 'cabin door events by state' stamp: 'HernanWilkinson 7/15/2011 18:28'!
-cabinDoorOpenedWhenWorkingAndCabinStopped
-
-	self stopCabinDoorMotorWhenOpened.
-	self hasFloorToGo 
-		ifTrue:  [ self waitForPeopleToCameInsideCabin ]
-		ifFalse: [ self stopWorking ]! !
+	observers do: [ :anObserver | anObserver update: state]! !
 
 
-!classDefinition: #ElevatorControllerConsole category: #'ElevatorConsole-Ejercicio'!
-Object subclass: #ElevatorControllerConsole
+!classDefinition: #ElevatorConsole category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #ElevatorConsole
 	instanceVariableNames: 'stream'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!ElevatorControllerConsole methodsFor: 'initialization' stamp: 'HernanWilkinson 7/15/2011 19:05'!
-initializeOf: anElevatorController 
-	
-	stream := WriteStream on: String new.
-	! !
+!ElevatorConsole methodsFor: 'initialization' stamp: 'a-lavia 10/18/2017 04:00:53'!
+initializeOf: anElevator
+
+	anElevator attach: self.
+	anElevator cabin attach: self.
+	anElevator cabin door attach: self.
+	stream := WriteStream on: String new.! !
 
 
-!ElevatorControllerConsole methodsFor: 'accessing' stamp: 'HernanWilkinson 7/15/2011 18:46'!
+!ElevatorConsole methodsFor: 'accessing' stamp: 'HAW 10/4/2017 12:41:14'!
 consoleReadStream
 	
 	^ ReadStream on: stream contents ! !
 
 
-!ElevatorControllerConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:36:23'!
+!ElevatorConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:06:45'!
 visitCabinDoorClosed: aCabinDoorClosedState 
 
 	stream 
 		nextPutAll: 'Puerta Cerrada';
 		newLine! !
 
-!ElevatorControllerConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:36:30'!
+!ElevatorConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:02:43'!
 visitCabinDoorClosing: aCabinDoorClosingState 
 	
 	stream 
 		nextPutAll: 'Puerta Cerrandose';
 		newLine! !
 
-!ElevatorControllerConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:36:34'!
+!ElevatorConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:18:17'!
+visitCabinDoorOpened: aCabinDoorOpenedState 
+! !
+
+!ElevatorConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:08:27'!
 visitCabinDoorOpening: aCabinDoorOpeningState 
 
 	stream 
 		nextPutAll: 'Puerta Abriendose'  ;
 		newLine! !
 
-!ElevatorControllerConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:36:39'!
+!ElevatorConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:07:21'!
 visitCabinMoving: aCabinMovingState 
 	
 	stream 
 		nextPutAll: 'Cabina Moviendose'  ;
 		newLine! !
 
-!ElevatorControllerConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:37:45'!
-visitCabinOpened: aCabinDoorOpenedState 
-
-	stream 
-		nextPutAll: 'Puerta Abierta'  ;
-		newLine! !
-
-!ElevatorControllerConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:36:44'!
+!ElevatorConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:07:59'!
 visitCabinStopped: aCabinStoppedState 
 	
 	stream 
 		nextPutAll: 'Cabina Detenida' ;
 		newLine! !
 
-!ElevatorControllerConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:38:58'!
+!ElevatorConsole methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:20:06'!
 visitCabinWaitingForPeople: aCabinWaitingForPeopleState 
-	
-	stream 
-		nextPutAll: 'Cabina Esperando Gente' ;
-		newLine! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'ElevatorControllerConsole class' category: #'ElevatorConsole-Ejercicio'!
-ElevatorControllerConsole class
-	instanceVariableNames: ''!
-
-!ElevatorControllerConsole class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/15/2011 18:39'!
-of: anElevatorController 
-
-	^ self new initializeOf: anElevatorController   ! !
-
-
-!classDefinition: #ElevatorControllerState category: #'ElevatorConsole-Ejercicio'!
-Object subclass: #ElevatorControllerState
-	instanceVariableNames: 'elevatorController'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
-
-!ElevatorControllerState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:47'!
-isIdle
-
-	^false! !
-
-!ElevatorControllerState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:47'!
-isWorking
-
-	^false! !
-
-
-!ElevatorControllerState methodsFor: 'initialization' stamp: 'HernanWilkinson 7/15/2011 17:44'!
-initializeOf: anElevatorController 
-	
-	elevatorController := anElevatorController ! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'ElevatorControllerState class' category: #'ElevatorConsole-Ejercicio'!
-ElevatorControllerState class
-	instanceVariableNames: ''!
-
-!ElevatorControllerState class methodsFor: 'accessing class hierarchy' stamp: 'HernanWilkinson 7/15/2011 17:44'!
-of: anElevatorController 
-	
-	^self new initializeOf: anElevatorController ! !
-
-
-!classDefinition: #ElevatorControllerIdleState category: #'ElevatorConsole-Ejercicio'!
-ElevatorControllerState subclass: #ElevatorControllerIdleState
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
-
-!ElevatorControllerIdleState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:12'!
-closeCabinDoor
-	
-	^elevatorController closeCabinDoorWhenIdle! !
-
-!ElevatorControllerIdleState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 17:51'!
-goUpPushedFromFloor: aFloorNumber 
-
-	^ elevatorController goUpPushedFromFloorWhenIdle: aFloorNumber ! !
-
-!ElevatorControllerIdleState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:04'!
-openCabinDoor
-	
-	^ elevatorController openCabinDoorWhenIdle! !
-
-
-!ElevatorControllerIdleState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 18:16'!
-cabinDoorClosed
-	
-	^elevatorController cabinDoorClosedWhenIdle! !
-
-
-!ElevatorControllerIdleState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:42'!
-isIdle
-	
-	^true! !
-
-
-!classDefinition: #ElevatorControllerWorkingState category: #'ElevatorConsole-Ejercicio'!
-ElevatorControllerState subclass: #ElevatorControllerWorkingState
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
-
-!ElevatorControllerWorkingState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 17:54'!
-cabinDoorClosed
-	
-	^ elevatorController cabinDoorClosedWhenWorking! !
-
-!ElevatorControllerWorkingState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 18:01'!
-cabinDoorOpened
-	
-	^ elevatorController cabinDoorOpenedWhenWorking! !
-
-
-!ElevatorControllerWorkingState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:09'!
-closeCabinDoor
-	
-	^ elevatorController closeCabinDoorWhenWorking! !
-
-!ElevatorControllerWorkingState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:06'!
-goUpPushedFromFloor: aFloorNumber
-
-	^ elevatorController goUpPushedFromFloorWhenWorking: aFloorNumber    ! !
-
-!ElevatorControllerWorkingState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:05'!
-openCabinDoor
-	
-	^ elevatorController openCabinDoorWhenWorking! !
-
-!ElevatorControllerWorkingState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:07'!
-waitForPeopleTimedOut
-	
-	^elevatorController waitForPeopleTimedOutWhenWorking! !
-
-
-!ElevatorControllerWorkingState methodsFor: 'testing' stamp: 'HernanWilkinson 7/15/2011 17:47'!
-isWorking 
-
-	^true! !
-
-
-!classDefinition: #ElevatorControllerStatusView category: #'ElevatorConsole-Ejercicio'!
-Object subclass: #ElevatorControllerStatusView
-	instanceVariableNames: 'cabinDoorFieldModel cabinFieldModel'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ElevatorConsole-Ejercicio'!
-
-!ElevatorControllerStatusView methodsFor: 'initialization' stamp: 'HernanWilkinson 7/15/2011 19:06'!
-initializeOf: anElevatorController 
 	
 	! !
 
 
-!ElevatorControllerStatusView methodsFor: 'accessing' stamp: 'HernanWilkinson 7/15/2011 19:00'!
+!ElevatorConsole methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/18/2017 04:01:00'!
+update: aState
+
+	aState accept: self.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ElevatorConsole class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+ElevatorConsole class
+	instanceVariableNames: ''!
+
+!ElevatorConsole class methodsFor: 'instance creation' stamp: 'HAW 10/4/2017 12:46:15'!
+of: anElevator
+
+	^ self new initializeOf: anElevator  ! !
+
+
+!classDefinition: #ElevatorState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #ElevatorState
+	instanceVariableNames: 'elevator'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+
+!ElevatorState methodsFor: 'initialization' stamp: 'HAW 10/3/2017 15:52:01'!
+initializeFor: anElevator
+
+	elevator := anElevator ! !
+
+
+!ElevatorState methodsFor: 'actions' stamp: 'HAW 10/3/2017 20:22:29'!
+goUpPushedFromFloor: aFloorNumber
+
+	self subclassResponsibility ! !
+
+
+!ElevatorState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:21:52'!
+isIdle
+
+	self subclassResponsibility ! !
+
+!ElevatorState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:21:56'!
+isWorking
+
+	self subclassResponsibility ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ElevatorState class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+ElevatorState class
+	instanceVariableNames: ''!
+
+!ElevatorState class methodsFor: 'instance creation' stamp: 'HAW 10/3/2017 15:52:13'!
+for: anElevator
+
+	^self new initializeFor: anElevator ! !
+
+
+!classDefinition: #ElevatorIdleState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+ElevatorState subclass: #ElevatorIdleState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+
+!ElevatorIdleState methodsFor: 'actions' stamp: 'HAW 10/3/2017 16:09:40'!
+goUpPushedFromFloor: aFloorNumber
+
+	^elevator goUpPushedFromFloorWhenIdle: aFloorNumber! !
+
+
+!ElevatorIdleState methodsFor: 'testing' stamp: 'HAW 10/3/2017 15:47:41'!
+isIdle
+
+	^true! !
+
+!ElevatorIdleState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:56:18'!
+isWorking
+	
+	^false! !
+
+
+!classDefinition: #ElevatorWorkingState category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+ElevatorState subclass: #ElevatorWorkingState
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+
+!ElevatorWorkingState methodsFor: 'actions' stamp: 'HAW 10/3/2017 20:23:05'!
+goUpPushedFromFloor: aFloorNumber
+
+	^elevator goUpPushedFromFloorWhenWorking: aFloorNumber ! !
+
+
+!ElevatorWorkingState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:18:43'!
+isIdle
+	
+	^false! !
+
+!ElevatorWorkingState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:19:04'!
+isWorking
+	
+	^true! !
+
+
+!classDefinition: #ElevatorStatusView category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #ElevatorStatusView
+	instanceVariableNames: 'cabinDoorFieldModel cabinFieldModel'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+
+!ElevatorStatusView methodsFor: 'initialization' stamp: 'a-lavia 10/18/2017 04:01:23'!
+initializeOf: anElevator
+
+	anElevator attach: self.
+	anElevator cabin attach: self.
+	anElevator cabin door attach: self.! !
+
+
+!ElevatorStatusView methodsFor: 'accessing' stamp: 'HAW 10/4/2017 12:41:24'!
 cabinDoorFieldModel
 	
 	^ cabinDoorFieldModel! !
 
-!ElevatorControllerStatusView methodsFor: 'accessing' stamp: 'HernanWilkinson 7/15/2011 19:00'!
+!ElevatorStatusView methodsFor: 'accessing' stamp: 'HAW 10/4/2017 12:41:24'!
 cabinFieldModel
 	
 	^ cabinFieldModel! !
 
 
-!ElevatorControllerStatusView methodsFor: 'visiting' stamp: 'HernanWilkinson 7/15/2011 18:59'!
+!ElevatorStatusView methodsFor: 'visiting' stamp: 'HAW 10/4/2017 12:41:24'!
 visitCabinDoorClosed: aCabinDoorClosedState 
 
 	cabinDoorFieldModel := 'Closed'! !
 
-!ElevatorControllerStatusView methodsFor: 'visiting' stamp: 'HernanWilkinson 7/15/2011 18:59'!
+!ElevatorStatusView methodsFor: 'visiting' stamp: 'HAW 10/4/2017 12:41:24'!
 visitCabinDoorClosing: aCabinDoorClosingState 
 	
 	cabinDoorFieldModel := 'Closing'! !
 
-!ElevatorControllerStatusView methodsFor: 'visiting' stamp: 'HernanWilkinson 7/15/2011 18:59'!
+!ElevatorStatusView methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:18:32'!
+visitCabinDoorOpened: aCabinDoorOpenedState 
+
+	cabinDoorFieldModel := 'Opened'! !
+
+!ElevatorStatusView methodsFor: 'visiting' stamp: 'HAW 10/4/2017 12:41:24'!
 visitCabinDoorOpening: aCabinDoorOpeningState 
 
 	cabinDoorFieldModel := 'Opening'! !
 
-!ElevatorControllerStatusView methodsFor: 'visiting' stamp: 'HernanWilkinson 7/15/2011 18:59'!
+!ElevatorStatusView methodsFor: 'visiting' stamp: 'HAW 10/4/2017 12:41:24'!
 visitCabinMoving: aCabinMovingState 
 	
 	cabinFieldModel := 'Moving'! !
 
-!ElevatorControllerStatusView methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:37:55'!
-visitCabinOpened: aCabinDoorOpenedState 
-
-	cabinDoorFieldModel := 'Opened'! !
-
-!ElevatorControllerStatusView methodsFor: 'visiting' stamp: 'HernanWilkinson 7/15/2011 18:59'!
+!ElevatorStatusView methodsFor: 'visiting' stamp: 'HAW 10/4/2017 12:41:24'!
 visitCabinStopped: aCabinStoppedState 
 	
 	cabinFieldModel := 'Stopped'! !
 
-!ElevatorControllerStatusView methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:39:17'!
+!ElevatorStatusView methodsFor: 'visiting' stamp: 'HAW 10/4/2017 14:20:21'!
 visitCabinWaitingForPeople: aCabinWaitingForPeopleState 
 	
 	cabinFieldModel := 'Waiting for People'! !
 
+
+!ElevatorStatusView methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/18/2017 04:01:09'!
+update: aState
+
+	aState accept: self.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ElevatorControllerStatusView class' category: #'ElevatorConsole-Ejercicio'!
-ElevatorControllerStatusView class
+!classDefinition: 'ElevatorStatusView class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+ElevatorStatusView class
 	instanceVariableNames: ''!
 
-!ElevatorControllerStatusView class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/15/2011 18:58'!
-of: anElevatorController 
+!ElevatorStatusView class methodsFor: 'instance creation' stamp: 'HAW 10/4/2017 12:46:55'!
+of: anElevator
 
-	^ self new initializeOf: anElevatorController   ! !
+	^ self new initializeOf: anElevator! !
+
+
+!classDefinition: #Motor category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #Motor
+	instanceVariableNames: 'state'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+
+!Motor methodsFor: 'initialization' stamp: 'HAW 10/3/2017 16:16:34'!
+initialize
+
+	state := #stopped! !
+
+
+!Motor methodsFor: 'actions' stamp: 'HAW 10/3/2017 16:17:14'!
+moveClockwise
+	
+	self assertIsNotMoving.
+	
+	state := #movingClockwise! !
+
+!Motor methodsFor: 'actions' stamp: 'HAW 10/3/2017 21:41:43'!
+moveCounterClockwise
+	
+	self assertIsNotMoving.
+	
+	state := #movingCounterClockwise! !
+
+!Motor methodsFor: 'actions' stamp: 'HAW 10/3/2017 16:37:55'!
+stop
+	
+	state := #stopped! !
+
+
+!Motor methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:16:07'!
+isMoving
+	
+	^self isStopped not! !
+
+!Motor methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:25:52'!
+isMovingClockwise
+	
+	^state = #movingClockwise! !
+
+!Motor methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:52:29'!
+isMovingCounterClockwise
+	
+	^state = #movingCounterClockwise ! !
+
+!Motor methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:26:30'!
+isStopped
+	
+	^state = #stopped! !
+
+
+!Motor methodsFor: 'assertions' stamp: 'HAW 10/3/2017 20:17:33'!
+assertIsNotMoving
+	
+	self isMoving ifTrue: [ self signalMotorMustBeStoppedBeforeMovingAgain]! !
+
+
+!Motor methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:18:10'!
+motorMustBeStoppedBeforeMovingAgainErrorMessage
+
+	^self class motorMustBeStoppedBeforeMovingAgainErrorMessage
+! !
+
+!Motor methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:17:56'!
+signalMotorMustBeStoppedBeforeMovingAgain
+
+	self error: self motorMustBeStoppedBeforeMovingAgainErrorMessage! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Motor class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Motor class
+	instanceVariableNames: ''!
+
+!Motor class methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:18:35'!
+motorMustBeStoppedBeforeMovingAgainErrorMessage
+
+	^'El motor debe estar parado antes de que se empiece a mover'! !
