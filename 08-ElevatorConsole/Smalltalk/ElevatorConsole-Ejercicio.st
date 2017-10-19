@@ -543,14 +543,13 @@ Object subclass: #Cabin
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!Cabin methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 15:45:37'!
+!Cabin methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 16:48:11'!
 initializeOf: anElevator
-
-	elevator := anElevator.
-	door := CabinDoor of: self.
-	motor := Motor new.
-	currentFloorNumber := 0.
-	state := ObservableStateDecorator with: (CabinStoppedState for: self).! !
+	elevator _ anElevator.
+	door _ CabinDoor of: self.
+	motor _ Motor new.
+	currentFloorNumber _ 0.
+	state _ ObservableStateProxy with: (CabinStoppedState for: self).! !
 
 
 !Cabin methodsFor: 'actions' stamp: 'HAW 10/3/2017 16:48:24'!
@@ -738,12 +737,11 @@ Object subclass: #CabinDoor
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinDoor methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 15:43:46'!
+!CabinDoor methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 16:48:11'!
 initializeOf: aCabin
-
-	cabin := aCabin.
-	motor := Motor new.
-	state := ObservableStateDecorator with: (CabinDoorOpenedState for: self).! !
+	cabin _ aCabin.
+	motor _ Motor new.
+	state _ ObservableStateProxy with: (CabinDoorOpenedState for: self).! !
 
 
 !CabinDoor methodsFor: 'actions' stamp: 'HAW 10/4/2017 10:21:35'!
@@ -1763,50 +1761,50 @@ motorMustBeStoppedBeforeMovingAgainErrorMessage
 	^'El motor debe estar parado antes de que se empiece a mover'! !
 
 
-!classDefinition: #ObservableStateDecorator category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
-Object subclass: #ObservableStateDecorator
+!classDefinition: #ObservableStateProxy category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #ObservableStateProxy
 	instanceVariableNames: 'state observers'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!ObservableStateDecorator methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 15:38:08'!
+!ObservableStateProxy methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 15:38:08'!
 initializeWith: aState
 
 	state := aState.
 	observers := OrderedCollection new.! !
 
 
-!ObservableStateDecorator methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:38:08'!
+!ObservableStateProxy methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:38:08'!
 changeWith: aState
 
 	state := aState.
 	self update.! !
 
 
-!ObservableStateDecorator methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 15:38:51'!
+!ObservableStateProxy methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 15:38:51'!
 attach: anObserver
 
 	observers add: anObserver.! !
 
-!ObservableStateDecorator methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 15:38:08'!
+!ObservableStateProxy methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 15:38:08'!
 update
 
 	observers do: [ :anObserver | anObserver update: state ].! !
 
 
-!ObservableStateDecorator methodsFor: 'message handling' stamp: 'a-lavia 10/19/2017 16:05:06'!
+!ObservableStateProxy methodsFor: 'message handling' stamp: 'a-lavia 10/19/2017 16:05:06'!
 doesNotUnderstand: aMessage
 
 	^aMessage sendTo: state.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ObservableStateDecorator class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
-ObservableStateDecorator class
+!classDefinition: 'ObservableStateProxy class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+ObservableStateProxy class
 	instanceVariableNames: ''!
 
-!ObservableStateDecorator class methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/19/2017 15:38:08'!
+!ObservableStateProxy class methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/19/2017 15:38:08'!
 with: aState
 
 	^self new initializeWith: aState.! !
