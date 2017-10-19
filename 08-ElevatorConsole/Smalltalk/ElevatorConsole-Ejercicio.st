@@ -538,20 +538,19 @@ setUp
 
 !classDefinition: #Cabin category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 Object subclass: #Cabin
-	instanceVariableNames: 'elevator state door motor currentFloorNumber stateNotifier'
+	instanceVariableNames: 'elevator state door motor currentFloorNumber'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!Cabin methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 14:47:58'!
+!Cabin methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 15:45:37'!
 initializeOf: anElevator
 
 	elevator := anElevator.
 	door := CabinDoor of: self.
 	motor := Motor new.
 	currentFloorNumber := 0.
-	state := CabinStoppedState for: self.
-	stateNotifier := StateNotifier with: state.	! !
+	state := ObservableStateDecorator with: (CabinStoppedState for: self).! !
 
 
 !Cabin methodsFor: 'actions' stamp: 'HAW 10/3/2017 16:48:24'!
@@ -568,26 +567,20 @@ waitForPeople
 ! !
 
 
-!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 14:39:45'!
-changeState: aState
-
-	state _ aState for: self.
-	stateNotifier notifyWith: state.! !
-
-!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 04:01:28'!
+!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:45:59'!
 makeMoving
 	
-	self changeState: CabinMovingState.! !
+	state changeWith: (CabinMovingState for: self).! !
 
-!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 04:00:53'!
+!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:48:19'!
 makeStopped
 	
-	self changeState: CabinStoppedState! !
+	state changeWith: (CabinStoppedState for: self).! !
 
-!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 04:00:24'!
+!Cabin methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:48:29'!
 makeWaitingForPeople
 
-	self changeState: CabinWaitingForPeopleState.! !
+	state changeWith: (CabinWaitingForPeopleState for: self).! !
 
 
 !Cabin methodsFor: 'sensor activation' stamp: 'HAW 10/3/2017 16:47:02'!
@@ -715,10 +708,10 @@ door
 	^door! !
 
 
-!Cabin methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 06:11:29'!
+!Cabin methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 15:43:13'!
 attach: anObserver
 
-	stateNotifier addObserver: anObserver.! !
+	state attach: anObserver.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -740,18 +733,17 @@ sensorDesincronizedErrorMessage
 
 !classDefinition: #CabinDoor category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 Object subclass: #CabinDoor
-	instanceVariableNames: 'cabin state motor stateNotifier'
+	instanceVariableNames: 'cabin state motor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!CabinDoor methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 14:48:12'!
+!CabinDoor methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 15:43:46'!
 initializeOf: aCabin
 
 	cabin := aCabin.
 	motor := Motor new.
-	state :=CabinDoorOpenedState for: self.
-	stateNotifier := StateNotifier with: state.! !
+	state := ObservableStateDecorator with: (CabinDoorOpenedState for: self).! !
 
 
 !CabinDoor methodsFor: 'actions' stamp: 'HAW 10/4/2017 10:21:35'!
@@ -879,31 +871,25 @@ isMotorStopped
 	^motor isStopped! !
 
 
-!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 14:40:06'!
-changeState: aState
-
-	state _ aState for: self.
-	stateNotifier notifyWith: state.! !
-
-!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 04:04:30'!
+!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:44:32'!
 makeClosed
 	
-	self changeState: CabinDoorClosedState.! !
+	state changeWith: (CabinDoorClosedState for: self).! !
 
-!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 04:04:39'!
+!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:44:47'!
 makeClosing
 	
-	self changeState: CabinDoorClosingState.! !
+	state changeWith: (CabinDoorClosingState for: self).! !
 
-!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 04:04:48'!
+!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:45:01'!
 makeOpened
 	
-	self changeState: CabinDoorOpenedState.! !
+	state changeWith: (CabinDoorOpenedState for: self).! !
 
-!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 04:04:57'!
+!CabinDoor methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:45:10'!
 makeOpening
 	
-	self changeState: CabinDoorOpeningState.! !
+	state changeWith: (CabinDoorOpeningState for: self).! !
 
 
 !CabinDoor methodsFor: 'exceptions' stamp: 'HAW 10/3/2017 20:08:30'!
@@ -917,10 +903,10 @@ signalSensorDesincronized
 	self error: self sensorDesincronizedErrorMessage! !
 
 
-!CabinDoor methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 06:07:47'!
+!CabinDoor methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 15:43:03'!
 attach: anObserver
 
-	stateNotifier addObserver: anObserver.! !
+	state attach: anObserver.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1777,43 +1763,50 @@ motorMustBeStoppedBeforeMovingAgainErrorMessage
 	^'El motor debe estar parado antes de que se empiece a mover'! !
 
 
-!classDefinition: #StateNotifier category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
-Object subclass: #StateNotifier
-	instanceVariableNames: 'observers state'
+!classDefinition: #ObservableStateDecorator category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+Object subclass: #ObservableStateDecorator
+	instanceVariableNames: 'state observers'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
 
-!StateNotifier methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 14:45:35'!
+!ObservableStateDecorator methodsFor: 'initialization' stamp: 'a-lavia 10/19/2017 15:38:08'!
 initializeWith: aState
 
 	state := aState.
 	observers := OrderedCollection new.! !
 
 
-!StateNotifier methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 06:06:12'!
-addObserver: anObserver
-
-	observers add: anObserver.! !
-
-!StateNotifier methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 14:49:20'!
-notifyWith: aState
+!ObservableStateDecorator methodsFor: 'state change' stamp: 'a-lavia 10/19/2017 15:38:08'!
+changeWith: aState
 
 	state := aState.
 	self update.! !
 
-!StateNotifier methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 14:50:55'!
+
+!ObservableStateDecorator methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 15:38:51'!
+attach: anObserver
+
+	observers add: anObserver.! !
+
+!ObservableStateDecorator methodsFor: 'observer' stamp: 'a-lavia 10/19/2017 15:38:08'!
 update
 
 	observers do: [ :anObserver | anObserver update: state ].! !
 
+
+!ObservableStateDecorator methodsFor: 'message handling' stamp: 'a-lavia 10/19/2017 16:05:06'!
+doesNotUnderstand: aMessage
+
+	^aMessage sendTo: state.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'StateNotifier class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
-StateNotifier class
+!classDefinition: 'ObservableStateDecorator class' category: #'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!
+ObservableStateDecorator class
 	instanceVariableNames: ''!
 
-!StateNotifier class methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/19/2017 14:47:25'!
+!ObservableStateDecorator class methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/19/2017 15:38:08'!
 with: aState
 
-	^self new initializeWith: aState! !
+	^self new initializeWith: aState.! !
