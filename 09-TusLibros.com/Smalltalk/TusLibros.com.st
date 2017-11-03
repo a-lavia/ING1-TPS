@@ -1,6 +1,6 @@
 !classDefinition: #TusLibrosTEST category: #'TusLibros.com'!
 TestCase subclass: #TusLibrosTEST
-	instanceVariableNames: 'aCart aCatalog anItem1 anItem2 anItem3 aValidCreditCard anExpiredCreditCard aSalesBook'
+	instanceVariableNames: 'aCart aCatalog anItem1 anItem2 anItem3 aValidCreditCard anExpiredCreditCard aSalesBook aMerchantProcessorBehaviour aCashier'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
@@ -61,7 +61,11 @@ addItemsToCatalog
 	aCatalog add: anItem3 with: 2.5 * peso.
 	! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:17:29'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:04:54'!
+debit: anAmount from: aCreditCard
+	^aMerchantProcessorBehaviour value: anAmount value: aCreditCard .! !
+
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:01:51'!
 setUp
 
 	aCatalog _ Catalog new.
@@ -73,6 +77,8 @@ setUp
 	anItem3 _ 'anItem3'.
 	
 	aSalesBook _ OrderedCollection new.
+	
+	aCashier _ Cashier with: self and: aSalesBook and: self.
 		
 	aValidCreditCard _ CreditCard withExpiration: (December, 2018).
 	anExpiredCreditCard _ CreditCard withExpiration: (March, 2017).! !
@@ -143,12 +149,10 @@ test07canNotAddNonPositiveQuantityOfItemsToACart
 			self assert: aCart isEmpty.
 		].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:38:43'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 19:44:24'!
 test08canNotCheckoutAnEmptyCart
 
-	| aCashier |
 	self addItemsToCatalog.
-	aCashier _ Cashier with: self and: aSalesBook and: MerchantProcessorValidCardSim new.
 	
 	self
 		should: [aCashier checkout: aCart with: aValidCreditCard ]
@@ -157,13 +161,11 @@ test08canNotCheckoutAnEmptyCart
 			self assert: anError messageText equals: Cashier canNotCheckoutAnEmptyCartErrorDescription.
 			self assert: aSalesBook isEmpty ].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:38:38'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 19:44:39'!
 test09canNotCheckoutWithAnExpiredCreditCard
 
-	| aCashier |	
 	self addItemsToCatalog.
 	self addItemsToCart.
-	aCashier _ Cashier with: self and: aSalesBook	and: MerchantProcessorValidCardSim new.
 	
 	self
 		should: [ aCashier checkout: aCart with: anExpiredCreditCard ]
@@ -172,47 +174,62 @@ test09canNotCheckoutWithAnExpiredCreditCard
 			self assert: anError messageText	equals: Cashier canNotCheckoutWithAnExpiredCreditCardErrorDescription.
 			self assert: aSalesBook isEmpty ].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:39:08'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:11:59'!
 test10aCashierCheckoutACartWithItemsAndReturnsTicketWithCorrectAmount
-
-	| aTicket aCashier |
+"renombrar"
+	| aTicket debitedAmount debitedCard |
 	self addItemsToCatalog.
 	self addItemsToCart.
-	aCashier _ Cashier with: self and: aSalesBook and: MerchantProcessorValidCardSim new.
+	
+	aMerchantProcessorBehaviour := [:anAmount :aCreditCard | debitedAmount := anAmount . debitedCard := aCreditCard .].
 	
 	aTicket _ aCashier checkout: aCart with: aValidCreditCard.
 	
 	self assert: aTicket total = (17.5 * peso).
-	self assert: aTicket total = aSalesBook first.! !
+	
+	self assert: aSalesBook size = 1.
+	self assert: aTicket total = aSalesBook first.
+	
+	self assert: aTicket total = debitedAmount .
+	self assert: aValidCreditCard = debitedCard .! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:44:30'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:59:22'!
 test11aCashierCanNotCheckoutACartWithItemsUsingStolenCreditCard
 
-	| aCashier |
 	self addItemsToCatalog.
 	self addItemsToCart.
-	aCashier _ Cashier with: self and: aSalesBook and: MerchantProcessorStolenCardSim new.
 	
-	self
-		should: [ aCashier checkout: aCart with: aValidCreditCard ]
+	aMerchantProcessorBehaviour := [:anAmount :aCreditCard | self error: Cashier stolenCreditCardErrorDescription ].
+	
+	self should: [ aCashier checkout: aCart with: aValidCreditCard ]
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals: Cashier stolenCreditCardErrorDescription .
 			self assert: aSalesBook isEmpty ].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:46:18'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:18:36'!
 test12aCashierCanNotCheckoutACartWithItemsUsinACreditCardWithoutFunds
 
-	| aCashier |
 	self addItemsToCatalog.
 	self addItemsToCart.
-	aCashier _ Cashier with: self and: aSalesBook and: MerchantProcessorCardWithoutFundsSim new.
 	
+	aMerchantProcessorBehaviour := [:anAmount :aCreditCard | self error: Cashier cardWithoutFundsErrorDescription ].
+		
 	self should: [aCashier checkout: aCart with: aValidCreditCard ]
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals: Cashier cardWithoutFundsErrorDescription.
 			self assert: aSalesBook isEmpty ].! !
+
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 21:11:08'!
+test13anUnregisteredUserCantCreateACart
+	| xxx |
+		
+	self should: [xxx createCartwith: 'invalidUser' and: 'invalidPassword'.]
+		raise: Error
+		withExceptionDo: [ :anError |
+			self assert: anError messageText equals: XXX userOrPasswordInvalid.
+			].! !
 
 !TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 04:09:52'!
 today
@@ -292,40 +309,30 @@ with: aCatalog
 
 !classDefinition: #Cashier category: #'TusLibros.com'!
 Object subclass: #Cashier
-	instanceVariableNames: 'calendar salesBook merchantProcessorAdapter'
+	instanceVariableNames: 'calendar salesBook merchantProcessor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:46:05'!
-cardWithoutFunds
-	self error: Cashier cardWithoutFundsErrorDescription .! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:42:13'!
+!Cashier methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:57:14'!
 checkout: aCart with: aCreditCard
 
-	aCart isEmpty ifTrue: [ self error: Cashier canNotCheckoutAnEmptyCartErrorDescription ].
+	(aCart isEmpty) ifTrue: [ self error: Cashier canNotCheckoutAnEmptyCartErrorDescription ].
 	
 	(aCreditCard isExpired: calendar today monthOfYear) ifTrue: [ self error: Cashier canNotCheckoutWithAnExpiredCreditCardErrorDescription ].
 	
-	^merchantProcessorAdapter checkout: aCart with: aCreditCard and: self.! !
+	merchantProcessor debit: (aCart total) from: aCreditCard.
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:15:33'!
-initializeWith: aCalendar and: aSalesBook and: aMerchanProcessorAdapter
+	salesBook add: aCart total.
+	
+	^Ticket with: (aCart total).! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:49:08'!
+initializeWith: aCalendar and: aSalesBook and: aMerchanProcessor
 
 	calendar := aCalendar .
 	salesBook := aSalesBook .
-	merchantProcessorAdapter := aMerchanProcessorAdapter.! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:42:25'!
-operationSuccessfulWith: aCart 
-
-	salesBook add: aCart total.
-	^Ticket with: (aCart total).! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:43:26'!
-stolenCreditCard
-	self error: Cashier stolenCreditCardErrorDescription.! !
+	merchantProcessor := aMerchanProcessor.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -424,45 +431,6 @@ withExpiration: anExpirationMonthAndYear
 	^self new initializeWith: anExpirationMonthAndYear.! !
 
 
-!classDefinition: #MerchantProcessorCardWithoutFundsSim category: #'TusLibros.com'!
-Object subclass: #MerchantProcessorCardWithoutFundsSim
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TusLibros.com'!
-
-!MerchantProcessorCardWithoutFundsSim methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:45:50'!
-checkout: aCart with: aCreditCard and: aCashier
-
-	^aCashier cardWithoutFunds.! !
-
-
-!classDefinition: #MerchantProcessorStolenCardSim category: #'TusLibros.com'!
-Object subclass: #MerchantProcessorStolenCardSim
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TusLibros.com'!
-
-!MerchantProcessorStolenCardSim methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:34:46'!
-checkout: aCart with: aCreditCard and: aCashier
-
-	^aCashier stolenCreditCard.! !
-
-
-!classDefinition: #MerchantProcessorValidCardSim category: #'TusLibros.com'!
-Object subclass: #MerchantProcessorValidCardSim
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TusLibros.com'!
-
-!MerchantProcessorValidCardSim methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:36:21'!
-checkout: aCart with: aCreditCard and: aCashier
-
-	^aCashier operationSuccessfulWith: aCart.! !
-
-
 !classDefinition: #Ticket category: #'TusLibros.com'!
 Object subclass: #Ticket
 	instanceVariableNames: 'total content'
@@ -494,3 +462,21 @@ Ticket class
 with: aTotalTransactionCost
 
 	^self new initializeWith: aTotalTransactionCost .! !
+
+
+!classDefinition: #XXX category: #'TusLibros.com'!
+Object subclass: #XXX
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros.com'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'XXX class' category: #'TusLibros.com'!
+XXX class
+	instanceVariableNames: ''!
+
+!XXX class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 21:12:19'!
+userOrPasswordInvalid
+	self shouldBeImplemented.! !
