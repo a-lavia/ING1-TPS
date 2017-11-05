@@ -221,14 +221,36 @@ test12aCashierCanNotCheckoutACartWithItemsUsinACreditCardWithoutFunds
 			self assert: anError messageText equals: Cashier cardWithoutFundsErrorDescription.
 			self assert: aSalesBook isEmpty ].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 21:11:08'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 01:07:01'!
 test13anUnregisteredUserCantCreateACart
 	| xxx |
-		
+	xxx := XXX new.
 	self should: [xxx createCartwith: 'invalidUser' and: 'invalidPassword'.]
 		raise: Error
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals: XXX userOrPasswordInvalid.
+			self assert: anError messageText equals: XXX userOrPasswordInvalidErrorDescription .
+			].! !
+
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 01:59:45'!
+test14aRegisteredUserCreateACartAndObtainACartID
+	| xxx aCartID |
+	
+	xxx := XXX new.
+	xxx registerClient: 'validUser' with: 'validPassword'.
+	aCartID := xxx createCartwith: 'validUser' and: 'validPassword'.
+	self assert: aCartID = 1.! !
+
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 02:00:02'!
+test15aRegisteredUserWithInvalidPasswordCantCreateACart
+	| xxx |
+	
+	xxx := XXX new.
+	xxx registerClient: 'validUser' with: 'validPassword'.
+	
+	self should: [xxx createCartwith: 'validUser' and: 'invalidPassword'.]
+		raise: Error
+		withExceptionDo: [ :anError |
+			self assert: anError messageText equals: XXX userOrPasswordInvalidErrorDescription .
 			].! !
 
 !TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 04:09:52'!
@@ -466,10 +488,25 @@ with: aTotalTransactionCost
 
 !classDefinition: #XXX category: #'TusLibros.com'!
 Object subclass: #XXX
-	instanceVariableNames: ''
+	instanceVariableNames: 'clients'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
+
+!XXX methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 01:58:18'!
+createCartwith: aClientID and: aPassword
+	|aClientPassword|
+	aClientPassword := clients at: aClientID ifAbsent: [self error: XXX userOrPasswordInvalidErrorDescription].
+	aClientPassword  = aPassword ifFalse: [self error: XXX userOrPasswordInvalidErrorDescription ].
+	^1.! !
+
+!XXX methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 01:40:08'!
+initialize
+	clients := Dictionary new.! !
+
+!XXX methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 01:43:42'!
+registerClient: aClientID with: aPassword
+	clients at: aClientID put: aPassword .! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -477,6 +514,6 @@ Object subclass: #XXX
 XXX class
 	instanceVariableNames: ''!
 
-!XXX class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 21:12:19'!
-userOrPasswordInvalid
-	self shouldBeImplemented.! !
+!XXX class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 13:29:42'!
+userOrPasswordInvalidErrorDescription
+	'user or password invalid'.! !
