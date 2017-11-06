@@ -1,50 +1,16 @@
 !classDefinition: #TusLibrosTEST category: #'TusLibros.com'!
 TestCase subclass: #TusLibrosTEST
-	instanceVariableNames: 'aCart aCatalog aBook1ISBN aBook2ISBN aBook3ISBN aValidCreditCard anExpiredCreditCard aSalesBook aMerchantProcessorBehaviour aCashier aClientsBook aValidUser aValidUserPassword aValidUserWrongPassword aUnregisteredUser aREST aStore currentTime'
+	instanceVariableNames: 'aCart aCatalog aBook1ISBN aBook2ISBN aBook3ISBN aValidCreditCard anExpiredCreditCard aSalesBook aMerchantProcessorBehaviour aCashier aClientsBook aREST aStore currentTime aClient aClientPassword aClientWrongPassword aUnregisteredClient aCartsAdministrator aClientRecord'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:59:47'!
-setUp
-
-	currentTime _ 32423324 * millisecond .
-	
-	aCatalog _ Catalog new.
-	
-	aCart _ Cart with: aCatalog.
-	
-	aBook1ISBN _ '978-3-16-148410-0'.
-	aBook2ISBN _ '978-3-16-148411-0'.
-	aBook3ISBN _ '978-3-16-148412-0'.
-	
-	aSalesBook _ SalesBook new.
-
-	aMerchantProcessorBehaviour :=  [:anAmount :aCreditCard | ].
-	aCashier _ Cashier with: self and: aSalesBook and: self.
-	
-	aValidCreditCard _ CreditCard with: '5400000000000001' and: (December, 2018)  and: 'Rodrigo '.
-	anExpiredCreditCard _ CreditCard with: '5400000000000002' and: (March, 2017)  and: 'Alejandro'.
-
-	aValidUser := 'validUser'.
-	aValidUserPassword := 'validPassword'.
-	
-	aClientsBook := Dictionary new.
-	aClientsBook at: aValidUser put:  aValidUserPassword.
-	
-	aValidUserWrongPassword := 'wrongPassword'.	
-	aUnregisteredUser := 'invalidUser'.
-
-	aStore _ Store with: aCatalog and: aCashier.
-	
-	aREST := REST with: aClientsBook and: aStore and: self.! !
-
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/26/2017 23:37:03'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 10/26/2017 23:37:03'!
 test01whenACartIsCreatedIsEmpty
 	
 	self assert: aCart isEmpty.! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 01:43:46'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 10/30/2017 01:43:46'!
 test02whenAnItemIsAddedToACartIsNotEmpty
 
 	self addItemsToCatalog.
@@ -52,7 +18,7 @@ test02whenAnItemIsAddedToACartIsNotEmpty
 
 	self deny: aCart isEmpty. ! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 01:43:27'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 10/30/2017 01:43:27'!
 test03canNotAddAnItemOutsideTheCatalogToACart
 
 	self 
@@ -63,7 +29,7 @@ test03canNotAddAnItemOutsideTheCatalogToACart
 			self assert: aCart isEmpty.
 		].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:02:33'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 03:02:33'!
 test04aCartRecordsItemsAdded
 
 	self addItemsToCatalog.
@@ -73,7 +39,7 @@ test04aCartRecordsItemsAdded
 	self assert: (aCart includes: aBook1ISBN ).
 	self assert: (aCart includes: aBook3ISBN ).! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:01:42'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 03:01:42'!
 test05aCartDoesNotRecordsNotAddedItems
 
 	self addItemsToCatalog.
@@ -83,7 +49,7 @@ test05aCartDoesNotRecordsNotAddedItems
 	self assert: (aCart includes: aBook1ISBN ).
 	self deny: (aCart includes: aBook2ISBN ).! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:01:50'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 03:01:50'!
 test06aCartRecordsQuantityOfItemsAdded
 
 	self addItemsToCatalog.
@@ -92,7 +58,7 @@ test06aCartRecordsQuantityOfItemsAdded
 	self deny: aCart isEmpty.
 	self assert: (aCart quantityOf: aBook1ISBN ) = 3.! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:45:34'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 05:45:34'!
 test07canNotAddNonPositiveQuantityOfItemsToACart
 
 	self addItemsToCatalog.
@@ -105,32 +71,32 @@ test07canNotAddNonPositiveQuantityOfItemsToACart
 			self assert: aCart isEmpty.
 		].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 19:44:24'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:36:33'!
 test08canNotCheckoutAnEmptyCart
 
 	self addItemsToCatalog.
 	
 	self
-		should: [aCashier checkout: aCart with: aValidCreditCard ]
+		should: [aCashier checkout: aCart with: aValidCreditCard for: aClient ]
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals: Cashier canNotCheckoutAnEmptyCartErrorDescription.
 			self assert: aSalesBook isEmpty ].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 19:44:39'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:36:39'!
 test09canNotCheckoutWithAnExpiredCreditCard
 
 	self addItemsToCatalog.
 	self addItemsToCart.
 	
 	self
-		should: [ aCashier checkout: aCart with: anExpiredCreditCard ]
+		should: [ aCashier checkout: aCart with: anExpiredCreditCard for: aClient ]
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText	equals: Cashier canNotCheckoutWithAnExpiredCreditCardErrorDescription.
 			self assert: aSalesBook isEmpty ].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:15:21'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:36:24'!
 test10aCashierCheckoutACartWithItemsAndReturnsTicketWithCorrectAmount
 
 	| aTransaction debitedAmount debitedCard |
@@ -139,7 +105,7 @@ test10aCashierCheckoutACartWithItemsAndReturnsTicketWithCorrectAmount
 	
 	aMerchantProcessorBehaviour := [:anAmount :aCreditCard | debitedAmount := anAmount . debitedCard := aCreditCard .].
 	
-	aTransaction _ aCashier checkout: aCart with: aValidCreditCard.
+	aTransaction _ aCashier checkout: aCart with: aValidCreditCard for: aClient .
 	
 	self assert: aTransaction total = (20.0 * peso).
 	
@@ -151,7 +117,7 @@ test10aCashierCheckoutACartWithItemsAndReturnsTicketWithCorrectAmount
 	self assert: aTransaction total = debitedAmount .
 	self assert: aValidCreditCard = debitedCard .! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:59:22'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:36:45'!
 test11aCashierCanNotCheckoutACartWithItemsUsingStolenCreditCard
 
 	self addItemsToCatalog.
@@ -159,13 +125,13 @@ test11aCashierCanNotCheckoutACartWithItemsUsingStolenCreditCard
 	
 	aMerchantProcessorBehaviour := [:anAmount :aCreditCard | self error: Cashier stolenCreditCardErrorDescription ].
 	
-	self should: [ aCashier checkout: aCart with: aValidCreditCard ]
+	self should: [ aCashier checkout: aCart with: aValidCreditCard for: aClient ]
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals: Cashier stolenCreditCardErrorDescription .
 			self assert: aSalesBook isEmpty ].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:18:36'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:47:04'!
 test12aCashierCanNotCheckoutACartWithItemsUsinACreditCardWithoutFunds
 
 	self addItemsToCatalog.
@@ -173,76 +139,76 @@ test12aCashierCanNotCheckoutACartWithItemsUsinACreditCardWithoutFunds
 	
 	aMerchantProcessorBehaviour := [:anAmount :aCreditCard | self error: Cashier cardWithoutFundsErrorDescription ].
 		
-	self should: [aCashier checkout: aCart with: aValidCreditCard ]
+	self should: [ aCashier checkout: aCart with: aValidCreditCard for: aClient ]
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals: Cashier cardWithoutFundsErrorDescription.
 			self assert: aSalesBook isEmpty ].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:35:55'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:49:54'!
 test13anUnregisteredClientCantCreateACart
 
-	self should: [aREST createCartwith: aUnregisteredUser and: 'xxx'.]
+	self should: [aREST createCartwith: aUnregisteredClient and: 'xxx'.]
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals: REST userOrPasswordInvalidErrorDescription .
 			].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:46:12'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:50:04'!
 test14aRegisteredClientCreateACartAndObtainACartIDOfAnEmptyCart
 	| aCartID |
 	
-	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword .
+	aCartID := aREST createCartwith: aClient and: aClientPassword .
 	self assert: ((aREST contentOf: aCartID) isEmpty).! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:42:37'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:50:15'!
 test15aRegisteredClientWithInvalidPasswordCantCreateACart
-	self should: [aREST createCartwith: aValidUser and: aValidUserWrongPassword .]
+	self should: [aREST createCartwith: aClient and: aClientWrongPassword .]
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals: REST userOrPasswordInvalidErrorDescription .
 			].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:42:44'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:50:31'!
 test16severalsCreatedCartsHaveDifferentsID
 	| aCartID1 aCartID2 |
 		
-	aCartID1 := aREST createCartwith: aValidUser and: aValidUserPassword .
-	aCartID2 := aREST createCartwith: aValidUser and: aValidUserPassword.
+	aCartID1 := aREST createCartwith: aClient and: aClientPassword .
+	aCartID2 := aREST createCartwith: aClient and: aClientPassword .
 	
 	self deny: (aCartID1 = aCartID2) .! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:46:29'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:46:36'!
 test17cantAddBookISBNToUnexistentCartID
 	| aUnexistenteCartID |
 	
-	aUnexistenteCartID := 'invalidCartID'.
-		
-	self should: [aREST addTo: aUnexistenteCartID isbn: aBook1ISBN quantity: 1.]
+	aUnexistenteCartID _ 'invalidCartID'.
+	self
+		should: [ aREST addTo: aUnexistenteCartID isbn: aBook1ISBN quantity: 1 ]
 		raise: Error
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals: Store unexistentCartIDErrorDescription .
+			self assert: anError messageText equals: CartSessionAdministrator unexistentCartIDErrorDescription 
 			].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:46:59'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:40:56'!
 test18cantAddToExistentCartIDaBookISBNOutsideTheCatalog
 	| aCartID |
 	
-	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword .
+	aCartID := aREST createCartwith: aClient and: aClientPassword .
 		
 	self should: [aREST addTo: aCartID isbn: aBook1ISBN quantity: 1.]
 		raise: Error
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals: Store invalidISBNErrorDescription.
+			self assert: anError messageText equals: Cart canNotAddItemFromOtherStoreErrorDescription .
 			].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:51:07'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:51:30'!
 test19aExistentCartIDHoldsACartThatRecordsAddedsBookISBN
 	| aCartID aCartContent |
 	
 	self addItemsToCatalog .
 	
-	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword .
+	aCartID := aREST createCartwith: aClient and: aClientPassword .
 	aREST addTo: aCartID isbn: aBook1ISBN quantity: 3.
 	
 	aCartContent := aREST contentOf: aCartID.
@@ -250,27 +216,27 @@ test19aExistentCartIDHoldsACartThatRecordsAddedsBookISBN
 	self assert: aCartContent size = 3.
 	self assert: (aCartContent includes: aBook1ISBN ).! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:49:17'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:41:07'!
 test20aClientCanNotCheckoutAnEmptyCart
 	| aCartID |
 	
 	self addItemsToCatalog .
 	
-	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword .	
+	aCartID := aREST createCartwith: aClient and: aClientPassword .	
 			
 	self should: [aREST checkout: aCartID with: aValidCreditCard ]
 		raise: Error
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals: Store emptyCartErrorDescription.
+			self assert: anError messageText equals: Cashier canNotCheckoutAnEmptyCartErrorDescription .
 			].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:51:53'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:51:39'!
 test21aRegisteredClientCheckoutACartWithBooksAndObtainsTransactionID
 	| aCartID aTransactionID aTransaction |
 	
 	self addItemsToCatalog .
 	
-	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword.
+	aCartID := aREST createCartwith: aClient and: aClientPassword .
 	
 	aREST addTo: aCartID isbn: aBook1ISBN quantity: 1.
 	
@@ -285,73 +251,72 @@ test21aRegisteredClientCheckoutACartWithBooksAndObtainsTransactionID
 	
 	! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 04:09:09'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:51:48'!
 test22severalsTransactionsHaveDifferentsID
 	| aCartID aTransactionID1 aTransactionID2 |
 	
 	self addItemsToCatalog .
 	
-	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword.
+	aCartID := aREST createCartwith: aClient and: aClientPassword .
 	aREST addTo: aCartID isbn: aBook1ISBN quantity: 1.
 	aTransactionID1 := aREST checkout: aCartID  with: aValidCreditCard .
 	
-	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword.
+	aCartID := aREST createCartwith: aClient and: aClientPassword .
 	aREST addTo: aCartID isbn: aBook1ISBN quantity: 1.
 	aTransactionID2 := aREST checkout: aCartID with: aValidCreditCard .
 	
 	self deny: (aTransactionID1 = aTransactionID2).
 	! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:53:44'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:51:56'!
 test23listingPucharsesOfARegisteredClientWithoutAnyGetAnEmptyList
 	| aListOfPucharses |
 	
-	aListOfPucharses := aREST pucharsesOf: aValidUser and: aValidUserPassword .
+	aListOfPucharses := aREST pucharsesOf: aClient and: aClientPassword .
 	
 	self assert: (aListOfPucharses isEmpty ).
 	! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:09:11'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:52:05'!
 test24listingPucharsesOfaRegisteredClientGetAllTheTransactions
 
 	| aCartID aTransactionID aListOfPucharses |
 	
 	self addItemsToCatalog .
 	
-	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword.
+	aCartID := aREST createCartwith: aClient and: aClientPassword .
 	aREST addTo: aCartID isbn: aBook1ISBN quantity: 3.
 	aTransactionID := aREST checkout: aCartID with: aValidCreditCard.
 	
-	aListOfPucharses := aREST pucharsesOf: aValidUser and: aValidUserPassword .
+	aListOfPucharses := aREST pucharsesOf: aClient and: aClientPassword .
 	
 	self assert: (aListOfPucharses size = 1 ).
 	self assert: (aListOfPucharses first id) = aTransactionID.
 	self assert: ((aSalesBook obtain: aTransactionID) includes: aBook1ISBN ).
 	self assert:  (((aSalesBook obtain: aTransactionID) quantityOf: aBook1ISBN ) = 3)! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 07:08:02'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:44:27'!
 test25cantOperateWithACartUnusedFor30Minutes
-
 	| aCartID |
+	self addItemsToCatalog.
 	
-	self addItemsToCatalog .
+	aCartID _ aREST createCartwith: aClient and: aClientPassword.
 	
-	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword.
-	
-	self advance: (18 * minute ).
+	self advance: 18 * minute.
 	
 	aREST addTo: aCartID isbn: aBook1ISBN quantity: 3.
 	
-	self advance: (32 * minute ).
+	self advance: 30 * minute.
 	
-	self should: [aREST checkout: aCartID with: aValidCreditCard ]
+	self
+		should: [ aREST checkout: aCartID with: aValidCreditCard ]
 		raise: Error
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals: REST cartTimeOutErrorDescription .
+			self assert: anError messageText equals: CartSessionAdministrator cartTimeOutErrorDescription 
 			].! !
 
 
-!TusLibrosTEST methodsFor: 'factory' stamp: 'a-lavia 11/6/2017 06:11:06'!
+!TusLibrosTEST methodsFor: 'setUp' stamp: 'a-lavia 11/6/2017 06:11:06'!
 addItemsToCart
 
 	aCart add: aBook1ISBN .
@@ -359,7 +324,7 @@ addItemsToCart
 	aCart add: aBook3ISBN quantity: 2.
 ! !
 
-!TusLibrosTEST methodsFor: 'factory' stamp: 'a-lavia 11/6/2017 02:59:57'!
+!TusLibrosTEST methodsFor: 'setUp' stamp: 'a-lavia 11/6/2017 02:59:57'!
 addItemsToCatalog
 
 	aCatalog add: aBook1ISBN with: 10 * peso.
@@ -367,20 +332,61 @@ addItemsToCatalog
 	aCatalog add: aBook3ISBN with: 2.5 * peso.
 	! !
 
+!TusLibrosTEST methodsFor: 'setUp' stamp: 'a-lavia 11/6/2017 15:43:19'!
+setUp
 
-!TusLibrosTEST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:59:11'!
+	currentTime _ 32423324 * millisecond.
+	
+	aCatalog _ Catalog new.
+	
+	aCart _ Cart with: aCatalog.
+	
+	aBook1ISBN _ '978-3-16-148410-0'.
+	aBook2ISBN _ '978-3-16-148411-0'.
+	aBook3ISBN _ '978-3-16-148412-0'.
+	
+	aSalesBook _ SalesBook new.
+	aClientRecord _ Dictionary new.
+	
+	aMerchantProcessorBehaviour _ [ :anAmount :aCreditCard | ].
+	
+	aCashier _ Cashier with: self and: aSalesBook and: self and: aClientRecord.
+		
+	aValidCreditCard _ CreditCard with: '5400000000000001' and: December , 2018 and: 'Rodrigo '.
+		
+	anExpiredCreditCard _ CreditCard with: '5400000000000002' and: March , 2017 and: 'Alejandro'.
+		
+	aClient _ 'Alejandro'.
+	aClientPassword _ 'validPassword'.
+	
+	aClientsBook _ Dictionary new.
+	aClientsBook at: aClient put: aClientPassword.
+	
+	aClientWrongPassword _ 'wrongPassword'.
+	
+	aUnregisteredClient _ 'Pedro'.
+	
+	aCartsAdministrator _ CartSessionAdministrator with: aCatalog and: self.
+		
+	aREST _ REST with: aClientsBook and: aCashier and: aCartsAdministrator.! !
+
+
+!TusLibrosTEST methodsFor: 'simulator' stamp: 'a-lavia 11/6/2017 14:47:00'!
 advance: milliseconds
+
 	currentTime := currentTime + milliseconds .! !
 
-!TusLibrosTEST methodsFor: 'actions' stamp: 'a-lavia 11/2/2017 20:04:54'!
+!TusLibrosTEST methodsFor: 'simulator' stamp: 'a-lavia 11/6/2017 14:46:56'!
 debit: anAmount from: aCreditCard
+
 	^aMerchantProcessorBehaviour value: anAmount value: aCreditCard .! !
 
-!TusLibrosTEST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:59:25'!
+!TusLibrosTEST methodsFor: 'simulator' stamp: 'a-lavia 11/6/2017 14:47:04'!
 now
+
 	^currentTime.! !
 
-!TusLibrosTEST methodsFor: 'actions' stamp: 'a-lavia 10/30/2017 04:09:52'!
+!TusLibrosTEST methodsFor: 'simulator' stamp: 'a-lavia 10/30/2017 04:09:52'!
 today
 
 	^FixedGregorianDate yearNumber: 2017 monthNumber: 10 dayNumber: 30.! !
@@ -388,7 +394,7 @@ today
 
 !classDefinition: #Cart category: #'TusLibros.com'!
 Object subclass: #Cart
-	instanceVariableNames: 'content catalog'
+	instanceVariableNames: 'catalog content'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
@@ -405,19 +411,27 @@ add: anItem quantity: aQuantity
 	(aQuantity > 0) ifFalse: [ self error: Cart canNotAddNonPositiveQuantityOfItemsErrorDescription ].
 	aQuantity timesRepeat: [ self add: anItem ].! !
 
-!Cart methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:06:54'!
+
+!Cart methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 00:18:45'!
+contents
+
+	^content copy.! !
+
+!Cart methodsFor: 'accessing' stamp: 'a-lavia 10/29/2017 00:09:13'!
+quantityOf: anItem 
+	| quantity |
+	
+	quantity := 0.
+	content do: [ :aContainedItem | (anItem = aContainedItem) ifTrue: [ quantity := quantity + 1 ] ].
+	^quantity.! !
+
+!Cart methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 15:49:26'!
 resume
 	|aCartResume|
 	
 	aCartResume := Dictionary new.
 	content do: [ :aContainedItem | aCartResume at: aContainedItem put: { (catalog priceOf: aContainedItem) . (self quantityOf: aContainedItem) }].
 	^aCartResume .! !
-
-
-!Cart methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 00:18:45'!
-contents
-
-	^content copy.! !
 
 !Cart methodsFor: 'accessing' stamp: 'a-lavia 10/30/2017 18:53:45'!
 total
@@ -438,20 +452,12 @@ isEmpty
 
 	^content isEmpty.! !
 
-!Cart methodsFor: 'check' stamp: 'a-lavia 10/29/2017 00:09:13'!
-quantityOf: anItem 
-	| quantity |
-	
-	quantity := 0.
-	content do: [ :aContainedItem | (anItem = aContainedItem) ifTrue: [ quantity := quantity + 1 ] ].
-	^quantity.! !
 
-
-!Cart methodsFor: 'initialization' stamp: 'a-lavia 10/29/2017 00:08:57'!
+!Cart methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 15:57:13'!
 initializeWith: aCatalog
 
-	content := OrderedCollection new. 
-	catalog := aCatalog.! !
+	catalog := aCatalog.
+	content := OrderedCollection new. ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -459,29 +465,96 @@ initializeWith: aCatalog
 Cart class
 	instanceVariableNames: 'catalog'!
 
-!Cart class methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/28/2017 23:45:57'!
-canNotAddItemFromOtherStoreErrorDescription
-	^'invalid item'! !
-
-!Cart class methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/29/2017 00:07:54'!
-canNotAddNonPositiveQuantityOfItemsErrorDescription
-	^'invalid quantity'! !
-
-!Cart class methodsFor: 'as yet unclassified' stamp: 'yn 10/26/2017 20:17:48'!
+!Cart class methodsFor: 'new' stamp: 'yn 10/26/2017 20:17:48'!
 with: aCatalog 
 	^self new initializeWith: aCatalog.! !
 
+
+!Cart class methodsFor: 'messages' stamp: 'a-lavia 10/28/2017 23:45:57'!
+canNotAddItemFromOtherStoreErrorDescription
+	^'invalid item'! !
+
+!Cart class methodsFor: 'messages' stamp: 'a-lavia 10/29/2017 00:07:54'!
+canNotAddNonPositiveQuantityOfItemsErrorDescription
+	^'invalid quantity'! !
+
 
-!classDefinition: #Cashier category: #'TusLibros.com'!
-Object subclass: #Cashier
-	instanceVariableNames: 'calendar salesBook merchantProcessor'
+!classDefinition: #CartSessionAdministrator category: #'TusLibros.com'!
+Object subclass: #CartSessionAdministrator
+	instanceVariableNames: 'catalog timeProvider cartsIDRegister cartsOwners cartsLastAccessedTime'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!Cashier methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 00:08:19'!
-checkout: aCart with: aCreditCard
-	| aTransaction |
+!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:45:12'!
+cartAccess: aCartID
+	| lastAccesedTime |
+	
+	lastAccesedTime _ cartsLastAccessedTime at: aCartID ifAbsentPut: timeProvider now.
+	timeProvider now - lastAccesedTime >= (30 * minute) ifTrue: [ self error: CartSessionAdministrator cartTimeOutErrorDescription ].
+	cartsLastAccessedTime at: aCartID put: timeProvider now.! !
+
+!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:29:32'!
+clientOf: aCartID
+
+	^cartsOwners at: aCartID ! !
+
+!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:29:22'!
+createCartFor: aClientID
+	| aCart aCartID |
+
+	aCart := (Cart with: catalog).
+	aCartID := aCart hash.
+	cartsIDRegister at: aCartID  put: aCart.
+	cartsOwners at: aCartID put: aClientID .
+	
+	^aCartID.! !
+
+!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:28:52'!
+initializeWith: aCatalog and: aTimeProvider
+	catalog := aCatalog.
+	timeProvider := aTimeProvider .
+			
+	cartsIDRegister := Dictionary new.
+	cartsOwners := Dictionary new.
+	cartsLastAccessedTime := Dictionary new.! !
+
+!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:45:22'!
+obtain: aCartID
+
+	self cartAccess: aCartID.
+	^cartsIDRegister at: aCartID ifAbsent: [ self error: CartSessionAdministrator unexistentCartIDErrorDescription ].! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CartSessionAdministrator class' category: #'TusLibros.com'!
+CartSessionAdministrator class
+	instanceVariableNames: ''!
+
+!CartSessionAdministrator class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:20:21'!
+cartTimeOutErrorDescription
+	^'cart time out'! !
+
+!CartSessionAdministrator class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:38:46'!
+unexistentCartIDErrorDescription
+
+	^'unexistent cart id'.! !
+
+!CartSessionAdministrator class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:32:23'!
+with: aCatalog and: aTimeProvider
+	^self new initializeWith: aCatalog and: aTimeProvider .! !
+
+
+!classDefinition: #Cashier category: #'TusLibros.com'!
+Object subclass: #Cashier
+	instanceVariableNames: 'calendar salesBook clientPucharsesRecord merchantProcessor'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros.com'!
+
+!Cashier methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 14:19:27'!
+checkout: aCart with: aCreditCard for: aClient
+	| aTransaction aClientRecord |
 	
 	aCart isEmpty ifTrue: [ self error: Cashier canNotCheckoutAnEmptyCartErrorDescription ].
 	(aCreditCard isExpired: calendar today monthOfYear) ifTrue: [ self error: Cashier canNotCheckoutWithAnExpiredCreditCardErrorDescription ].
@@ -492,15 +565,25 @@ checkout: aCart with: aCreditCard
 	
 	salesBook add: aTransaction .
 	
+	aClientRecord := self obtainTransactionsRecord: aClient .
+	aClientRecord add: aTransaction .
+	
 	^aTransaction .! !
 
 
-!Cashier methodsFor: 'initialization' stamp: 'a-lavia 11/5/2017 22:47:59'!
-initializeWith: aCalendar and: aSalesBook and: aMerchantProcessor
+!Cashier methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 14:18:13'!
+initializeWith: aCalendar and: aSalesBook and: aMerchantProcessor and: aPucharsesRecord
 
 	calendar := aCalendar .
 	salesBook := aSalesBook .
-	merchantProcessor := aMerchantProcessor.! !
+	merchantProcessor := aMerchantProcessor.
+	clientPucharsesRecord :=  aPucharsesRecord .! !
+
+
+!Cashier methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 14:19:55'!
+obtainTransactionsRecord: aClient
+
+	^clientPucharsesRecord at: aClient ifAbsentPut: [OrderedCollection new.]. ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -525,10 +608,10 @@ cardWithoutFundsErrorDescription
 stolenCreditCardErrorDescription
 	^'stolen card'.! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 18:25:37'!
-with: aCalendar and: aSalesBook and: aMerchanProcessor
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:06:03'!
+with: aCalendar and: aSalesBook and: aMerchanProcessor and: aClientRecord
 
-	^self new initializeWith: aCalendar and: aSalesBook and: aMerchanProcessor.! !
+	^self new initializeWith: aCalendar and: aSalesBook and: aMerchanProcessor and: aClientRecord .! !
 
 
 !classDefinition: #Catalog category: #'TusLibros.com'!
@@ -606,27 +689,26 @@ with: aCreditCardNumber and: anExpirationMonthAndYear and: aCreditCardOwner
 
 !classDefinition: #REST category: #'TusLibros.com'!
 Object subclass: #REST
-	instanceVariableNames: 'store clientsBook cartsLastAccessedTime timeProvider'
+	instanceVariableNames: 'cashier clientsBook cartsAdministrator'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:32:35'!
+!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:31:27'!
 createCartwith: aClientID and: aPassword
 	| aCartID |
 	
 	self authenticate: aClientID with: aPassword .
-	aCartID := store createCartFor: aClientID.
-	
-	self cartAccess: aCartID .
-	
+	aCartID := cartsAdministrator createCartFor: aClientID .
 	^aCartID .! !
 
 
-!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:33:02'!
+!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 15:30:18'!
 addTo: aCartID isbn: aBookISBN quantity: aBookQuantity 
-	self cartAccess: aCartID .
-	store addTo: aCartID isbn: aBookISBN quantity: aBookQuantity .! !
+	| aCart |
+	
+	aCart := cartsAdministrator obtain: aCartID.
+	aCart add: aBookISBN quantity: aBookQuantity.! !
 
 !REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 03:18:10'!
 authenticate: aClientID with: aPassword
@@ -635,43 +717,38 @@ authenticate: aClientID with: aPassword
 	aClientPassword := clientsBook at: aClientID ifAbsent: [self error: REST userOrPasswordInvalidErrorDescription].
 	aClientPassword  = aPassword ifFalse: [self error: REST userOrPasswordInvalidErrorDescription ].! !
 
-!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 07:04:08'!
-cartAccess: aCartID
-	| lastAccesedTime |
-	lastAccesedTime := 	cartsLastAccessedTime at: aCartID ifAbsentPut: timeProvider now.
-	((timeProvider now-lastAccesedTime ) > (30 * minute)) ifTrue: [self error: REST cartTimeOutErrorDescription].
-	cartsLastAccessedTime at: aCartID put: (timeProvider now).! !
-
-!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:32:55'!
+!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 15:30:39'!
 checkout: aCartID with: aCreditCard
-	| aTransactionID |
-	self cartAccess: aCartID .
-	aTransactionID := store checkout: aCartID with: aCreditCard.
-	^aTransactionID.! !
+	| aCart aClient aTransaction |
+	
+	aCart := cartsAdministrator obtain: aCartID .
+	aClient := cartsAdministrator clientOf: aCartID.
+	aTransaction := cashier checkout: aCart with: aCreditCard for: aClient.
+	
+	^aTransaction id.! !
 
 
-!REST methodsFor: 'check' stamp: 'a-lavia 11/6/2017 06:32:49'!
+!REST methodsFor: 'check' stamp: 'a-lavia 11/6/2017 15:30:44'!
 contentOf: aCartID 
 	| aClientCart |
-	self cartAccess: aCartID .
-	aClientCart := store obtainCart: aCartID .
+	
+	aClientCart := cartsAdministrator obtain: aCartID .
 	^aClientCart contents .! !
 
 
-!REST methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 06:33:38'!
-initializeWith: aClientsBook and: aStore and: aTimeProvider
+!REST methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 15:31:11'!
+initializeWith: aClientsBook and: aCashier and: aCartAdministrator
 
 	clientsBook := aClientsBook .
-	store := aStore .
-	timeProvider := aTimeProvider .
-	cartsLastAccessedTime := Dictionary new.! !
+	cashier := aCashier.
+	cartsAdministrator := aCartAdministrator ! !
 
 
-!REST methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 05:54:51'!
+!REST methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 14:55:50'!
 pucharsesOf: aClientID and: aClientPassword
 
 	self authenticate: aClientID with: aClientPassword .
-	^store obtainTransactionsRecord: aClientID .! !
+	^cashier obtainTransactionsRecord: aClientID .! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -679,18 +756,15 @@ pucharsesOf: aClientID and: aClientPassword
 REST class
 	instanceVariableNames: ''!
 
-!REST class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:37:25'!
-cartTimeOutErrorDescription
-	^'cart time out'! !
-
-!REST class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:41:50'!
+!REST class methodsFor: 'messages' stamp: 'a-lavia 11/6/2017 03:41:50'!
 userOrPasswordInvalidErrorDescription
 
 	^'user or password invalid'.! !
 
-!REST class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:33:51'!
-with: aClientsBook and: aStore and: aTimeProvider
-	^self new initializeWith: aClientsBook and: aStore and: aTimeProvider .! !
+
+!REST class methodsFor: 'new' stamp: 'a-lavia 11/6/2017 15:33:36'!
+with: aClientsBook and: aCashier and: aCartAdministrator
+	^self new initializeWith: aClientsBook and: aCashier and: aCartAdministrator .! !
 
 
 !classDefinition: #SalesBook category: #'TusLibros.com'!
@@ -732,91 +806,6 @@ obtain: aTransactionID
 size
 
 	^transactions size.! !
-
-
-!classDefinition: #Store category: #'TusLibros.com'!
-Object subclass: #Store
-	instanceVariableNames: 'catalog cashier clientPucharsesRecord cartsRegister cartsOwners'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TusLibros.com'!
-
-!Store methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 03:10:53'!
-addTo: aCartID isbn: aBookISBN quantity: aBookQuantity 
-	| aClientCart |
-	
-	aClientCart := self obtainCart: aCartID .
-	aClientCart add: aBookISBN quantity: aBookQuantity .! !
-
-!Store methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 05:55:27'!
-checkout: aCartID with: aCreditCard
-	| aClientCart aTransaction aCartOwnerID aClientRecord |
-	
-	aClientCart := self obtainCart: aCartID .
-	
-	aTransaction := cashier checkout: aClientCart with: aCreditCard.
-	
-	aCartOwnerID := cartsOwners at: aCartID .
-	aClientRecord := self obtainTransactionsRecord: aCartOwnerID .
-	aClientRecord add: aTransaction .
-	
-	^aTransaction id.! !
-
-!Store methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 03:34:02'!
-createCartFor: aClientID
-	| aCartID |
-	
-	aCartID := cartsRegister size.
-	cartsRegister at: aCartID  put: (Cart with: catalog).
-	cartsOwners at: aCartID put: aClientID .
-	
-	^aCartID.! !
-
-
-!Store methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 03:32:53'!
-initializeWith: aCatalog and: aCashier
-	catalog := aCatalog.
-	cashier := aCashier.
-	
-	clientPucharsesRecord := Dictionary new.
-	
-	cartsRegister := Dictionary new.
-	cartsOwners := Dictionary new.! !
-
-
-!Store methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 05:55:20'!
-obtainCart: aCartID
-
-	^cartsRegister at: aCartID ifAbsent: [self error: Store unexistentCartIDErrorDescription.].! !
-
-!Store methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 05:55:16'!
-obtainTransactionsRecord: aClientID
-
-	^clientPucharsesRecord at: aClientID ifAbsentPut: [OrderedCollection new.]. ! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Store class' category: #'TusLibros.com'!
-Store class
-	instanceVariableNames: ''!
-
-!Store class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:50:49'!
-emptyCartErrorDescription
-	^Cashier canNotCheckoutAnEmptyCartErrorDescription .! !
-
-!Store class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:45:20'!
-invalidISBNErrorDescription
-
-	^Cart canNotAddItemFromOtherStoreErrorDescription.! !
-
-!Store class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:43:16'!
-unexistentCartIDErrorDescription
-
-	^'unexistent cart id'.! !
-
-!Store class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:34:52'!
-with: aCatalog and: aCashier
-	^self new initializeWith: aCatalog and: aCashier.! !
 
 
 !classDefinition: #Transaction category: #'TusLibros.com'!
