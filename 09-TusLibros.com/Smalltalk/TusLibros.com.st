@@ -299,7 +299,7 @@ test24listingPucharsesOfaRegisteredClientGetAllTheTransactions
 	self assert: (aTransaction includes: aBook1ISBN ).
 	self assert:  ((aTransaction quantityOf: aBook1ISBN ) = 3)! !
 
-!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:44:27'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 17:03:48'!
 test25cantOperateWithACartUnusedFor30Minutes
 	| aCartID |
 	self addItemsToCatalog.
@@ -316,7 +316,8 @@ test25cantOperateWithACartUnusedFor30Minutes
 		should: [ aREST checkout: aCartID with: aValidCreditCard ]
 		raise: Error
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals: CartSessionAdministrator cartTimeOutErrorDescription 
+			self assert: anError messageText equals: CartSessionAdministrator cartTimeOutErrorDescription .
+			self assert: (aSalesBook isEmpty).
 			].! !
 
 
