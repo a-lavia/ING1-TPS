@@ -556,7 +556,7 @@ unexistentCartIDErrorDescription
 
 !classDefinition: #Cashier category: #'TusLibros.com'!
 Object subclass: #Cashier
-	instanceVariableNames: 'calendar salesBook clientPucharsesRecord merchantProcessor'
+	instanceVariableNames: 'calendar salesBook merchantProcessor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
