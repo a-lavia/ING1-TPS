@@ -1,6 +1,6 @@
 !classDefinition: #TusLibrosTEST category: #'TusLibros.com'!
 TestCase subclass: #TusLibrosTEST
-	instanceVariableNames: 'aCart aCatalog aBook1ISBN aBook2ISBN aBook3ISBN aValidCreditCard anExpiredCreditCard aSalesBook aMerchantProcessorBehaviour aCashier aClientsBook aCartsAdministrator aREST currentTime aClient aClientPassword aClientWrongPassword aUnregisteredClient aClientRecord'
+	instanceVariableNames: 'aCart aCatalog aBook1ISBN aBook2ISBN aBook3ISBN aValidCreditCard anExpiredCreditCard aSalesBook aMerchantProcessorBehaviour aCashier aClientsBook aCartsAdministrator aREST currentTime aClient aClientPassword aClientWrongPassword aUnregisteredClient'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
@@ -279,10 +279,10 @@ test23listingPucharsesOfARegisteredClientWithoutAnyGetAnEmptyList
 	self assert: (aListOfPucharses isEmpty ).
 	! !
 
-!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:52:05'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 17:00:52'!
 test24listingPucharsesOfaRegisteredClientGetAllTheTransactions
 
-	| aCartID aTransactionID aListOfPucharses |
+	| aCartID aTransactionID aTransaction aListOfPucharses |
 	
 	self addItemsToCatalog .
 	
@@ -290,12 +290,14 @@ test24listingPucharsesOfaRegisteredClientGetAllTheTransactions
 	aREST addTo: aCartID isbn: aBook1ISBN quantity: 3.
 	aTransactionID := aREST checkout: aCartID with: aValidCreditCard.
 	
+	aTransaction :=aSalesBook obtain: aTransactionID .
 	aListOfPucharses := aREST pucharsesOf: aClient and: aClientPassword .
 	
 	self assert: (aListOfPucharses size = 1 ).
 	self assert: (aListOfPucharses first id) = aTransactionID.
-	self assert: ((aSalesBook obtain: aTransactionID) includes: aBook1ISBN ).
-	self assert:  (((aSalesBook obtain: aTransactionID) quantityOf: aBook1ISBN ) = 3)! !
+	self assert: (aListOfPucharses includes: aTransaction).
+	self assert: (aTransaction includes: aBook1ISBN ).
+	self assert:  ((aTransaction quantityOf: aBook1ISBN ) = 3)! !
 
 !TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:44:27'!
 test25cantOperateWithACartUnusedFor30Minutes
@@ -334,7 +336,7 @@ addItemsToCatalog
 	aCatalog add: aBook3ISBN with: 2.5 * peso.
 	! !
 
-!TusLibrosTEST methodsFor: 'setUp' stamp: 'a-lavia 11/6/2017 16:30:47'!
+!TusLibrosTEST methodsFor: 'setUp' stamp: 'a-lavia 11/6/2017 16:55:57'!
 setUp
 
 	"el setup fue ampliandose a medida que avanzamos con los tests, inicializa cosas demas para algunos tests, futuro refactor recategorizar los tests e incluir factory que inicializa solo lo necesario"
@@ -350,11 +352,10 @@ setUp
 	aBook3ISBN _ '978-3-16-148412-0'.
 	
 	aSalesBook _ SalesBook new.
-	aClientRecord _ Dictionary new.
 	
 	aMerchantProcessorBehaviour _ [ :anAmount :aCreditCard | ].
 	
-	aCashier _ Cashier with: self and: aSalesBook and: self and: aClientRecord.
+	aCashier _ Cashier with: self and: aSalesBook and: self.
 		
 	aValidCreditCard _ CreditCard with: '5400000000000001' and: December , 2018 and: 'Rodrigo '.
 		
@@ -372,7 +373,7 @@ setUp
 	
 	aCartsAdministrator _ CartSessionAdministrator with: aCatalog and: self.
 		
-	aREST _ REST with: aClientsBook and: aCashier and: aCartsAdministrator.! !
+	aREST _ REST with: aClientsBook and: aCashier and: aCartsAdministrator and: aSalesBook .! !
 
 
 !TusLibrosTEST methodsFor: 'simulator' stamp: 'a-lavia 11/6/2017 14:47:00'!
@@ -559,38 +560,29 @@ Object subclass: #Cashier
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!Cashier methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 14:19:27'!
+!Cashier methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 16:45:30'!
 checkout: aCart with: aCreditCard for: aClient
-	| aTransaction aClientRecord |
+	| aTransaction |
 	
 	aCart isEmpty ifTrue: [ self error: Cashier canNotCheckoutAnEmptyCartErrorDescription ].
 	(aCreditCard isExpired: calendar today monthOfYear) ifTrue: [ self error: Cashier canNotCheckoutWithAnExpiredCreditCardErrorDescription ].
 	
 	merchantProcessor debit: aCart total from: aCreditCard.
 	
-	aTransaction := Transaction with: (salesBook nextID) and: (aCart resume).
+	aTransaction := Transaction with: (salesBook nextID) and: (aCart resume) and: aClient .
 	
 	salesBook add: aTransaction .
-	
-	aClientRecord := self obtainTransactionsRecord: aClient .
-	aClientRecord add: aTransaction .
 	
 	^aTransaction .! !
 
 
-!Cashier methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 14:18:13'!
-initializeWith: aCalendar and: aSalesBook and: aMerchantProcessor and: aPucharsesRecord
+!Cashier methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 16:49:31'!
+initializeWith: aCalendar and: aSalesBook and: aMerchantProcessor
 
 	calendar := aCalendar .
 	salesBook := aSalesBook .
-	merchantProcessor := aMerchantProcessor.
-	clientPucharsesRecord :=  aPucharsesRecord .! !
+	merchantProcessor := aMerchantProcessor.! !
 
-
-!Cashier methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 14:19:55'!
-obtainTransactionsRecord: aClient
-
-	^clientPucharsesRecord at: aClient ifAbsentPut: [OrderedCollection new.]. ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -617,10 +609,10 @@ stolenCreditCardErrorDescription
 	^'stolen card'.! !
 
 
-!Cashier class methodsFor: 'new' stamp: 'a-lavia 11/6/2017 15:06:03'!
-with: aCalendar and: aSalesBook and: aMerchanProcessor and: aClientRecord
+!Cashier class methodsFor: 'new' stamp: 'a-lavia 11/6/2017 16:49:42'!
+with: aCalendar and: aSalesBook and: aMerchanProcessor
 
-	^self new initializeWith: aCalendar and: aSalesBook and: aMerchanProcessor and: aClientRecord .! !
+	^self new initializeWith: aCalendar and: aSalesBook and: aMerchanProcessor.! !
 
 
 !classDefinition: #Catalog category: #'TusLibros.com'!
@@ -698,7 +690,7 @@ with: aCreditCardNumber and: anExpirationMonthAndYear and: aCreditCardOwner
 
 !classDefinition: #REST category: #'TusLibros.com'!
 Object subclass: #REST
-	instanceVariableNames: 'cashier clientsBook cartsAdministrator'
+	instanceVariableNames: 'cashier salesBook clientsBook cartsAdministrator'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
@@ -711,12 +703,13 @@ authenticate: aClientID with: aPassword
 	aClientPassword  = aPassword ifFalse: [self error: REST userOrPasswordInvalidErrorDescription ].! !
 
 
-!REST methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 15:31:11'!
-initializeWith: aClientsBook and: aCashier and: aCartAdministrator
+!REST methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 16:51:52'!
+initializeWith: aClientsBook and: aCashier and: aCartAdministrator and: aSalesBook
 
 	clientsBook := aClientsBook .
 	cashier := aCashier.
-	cartsAdministrator := aCartAdministrator ! !
+	cartsAdministrator := aCartAdministrator .
+	salesBook := aSalesBook.! !
 
 
 !REST methodsFor: 'operations' stamp: 'a-lavia 11/6/2017 15:30:18'!
@@ -751,11 +744,11 @@ createCartwith: aClientID and: aPassword
 	aCartID := cartsAdministrator createCartFor: aClientID .
 	^aCartID .! !
 
-!REST methodsFor: 'operations' stamp: 'a-lavia 11/6/2017 14:55:50'!
+!REST methodsFor: 'operations' stamp: 'a-lavia 11/6/2017 16:52:17'!
 pucharsesOf: aClientID and: aClientPassword
 
 	self authenticate: aClientID with: aClientPassword .
-	^cashier obtainTransactionsRecord: aClientID .! !
+	^salesBook obtainTransactionsRecord: aClientID .! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -769,9 +762,9 @@ userOrPasswordInvalidErrorDescription
 	^'user or password invalid'.! !
 
 
-!REST class methodsFor: 'new' stamp: 'a-lavia 11/6/2017 15:33:36'!
-with: aClientsBook and: aCashier and: aCartAdministrator
-	^self new initializeWith: aClientsBook and: aCashier and: aCartAdministrator .! !
+!REST class methodsFor: 'new' stamp: 'a-lavia 11/6/2017 16:52:01'!
+with: aClientsBook and: aCashier and: aCartAdministrator and: aSalesBook
+	^self new initializeWith: aClientsBook and: aCashier and: aCartAdministrator and: aSalesBook .! !
 
 
 !classDefinition: #SalesBook category: #'TusLibros.com'!
@@ -809,6 +802,14 @@ obtain: aTransactionID
 
 	^transactions at: aTransactionID ! !
 
+!SalesBook methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 16:58:28'!
+obtainTransactionsRecord: aClient
+	| clientPucharsesRecord |
+	
+	clientPucharsesRecord :=OrderedCollection new.
+	transactions do: [:aTransaction | aTransaction client = aClient ifTrue: [ clientPucharsesRecord add: aTransaction ]].
+	^clientPucharsesRecord! !
+
 !SalesBook methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 00:33:13'!
 size
 
@@ -817,10 +818,15 @@ size
 
 !classDefinition: #Transaction category: #'TusLibros.com'!
 Object subclass: #Transaction
-	instanceVariableNames: 'id cartResume'
+	instanceVariableNames: 'id cartResume client'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
+
+!Transaction methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 16:42:59'!
+client
+
+	^client! !
 
 !Transaction methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 00:34:48'!
 id
@@ -848,11 +854,12 @@ includes: anItem
 	^cartResume includesKey: anItem .! !
 
 
-!Transaction methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 00:03:50'!
-initializeWith: aID and: aCartResume
+!Transaction methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 16:41:41'!
+initializeWith: aID and: aCartResume and: aClient
 
 	id := aID.
-	cartResume := aCartResume! !
+	cartResume := aCartResume.
+	client := aClient.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -860,7 +867,7 @@ initializeWith: aID and: aCartResume
 Transaction class
 	instanceVariableNames: ''!
 
-!Transaction class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:07:54'!
-with: aID and: aCartResume
+!Transaction class methodsFor: 'new' stamp: 'a-lavia 11/6/2017 16:42:36'!
+with: aID and: aCartResume and: aClient
 
-	^self new initializeWith: aID and: aCartResume.! !
+	^self new initializeWith: aID and: aCartResume and: aClient.! !
