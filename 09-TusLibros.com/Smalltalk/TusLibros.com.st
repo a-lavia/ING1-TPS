@@ -1,6 +1,6 @@
 !classDefinition: #TusLibrosTEST category: #'TusLibros.com'!
 TestCase subclass: #TusLibrosTEST
-	instanceVariableNames: 'aCart aCatalog aBook1ISBN aBook2ISBN aBook3ISBN aValidCreditCard anExpiredCreditCard aSalesBook aMerchantProcessorBehaviour aCashier aClientsBook aValidUser aValidUserPassword aValidUserWrongPassword aUnregisteredUser aREST aStore'
+	instanceVariableNames: 'aCart aCatalog aBook1ISBN aBook2ISBN aBook3ISBN aValidCreditCard anExpiredCreditCard aSalesBook aMerchantProcessorBehaviour aCashier aClientsBook aValidUser aValidUserPassword aValidUserWrongPassword aUnregisteredUser aREST aStore currentTime'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
@@ -21,17 +21,23 @@ addItemsToCatalog
 	aCatalog add: aBook3ISBN with: 2.5 * peso.
 	! !
 
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:59:11'!
+advance: milliseconds
+	currentTime := currentTime + milliseconds .! !
+
 !TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:04:54'!
 debit: anAmount from: aCreditCard
 	^aMerchantProcessorBehaviour value: anAmount value: aCreditCard .! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:34:37'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:59:25'!
 now
-	^GregorianDateTime now.! !
+	^currentTime.! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:34:20'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:59:47'!
 setUp
 
+	currentTime _ 32423324 * millisecond .
+	
 	aCatalog _ Catalog new.
 	
 	aCart _ Cart with: aCatalog.
@@ -351,23 +357,26 @@ test24listingPucharsesOfaRegisteredClientGetAllTheTransactions
 	self assert: ((aSalesBook obtain: aTransactionID) includes: aBook1ISBN ).
 	self assert:  (((aSalesBook obtain: aTransactionID) quantityOf: aBook1ISBN ) = 3)! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:22:05'!
+!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 07:08:02'!
 test25cantOperateWithACartUnusedFor30Minutes
 
-	| aCartID aTransactionID aListOfPucharses |
+	| aCartID |
 	
 	self addItemsToCatalog .
 	
 	aCartID := aREST createCartwith: aValidUser and: aValidUserPassword.
+	
+	self advance: (18 * minute ).
+	
 	aREST addTo: aCartID isbn: aBook1ISBN quantity: 3.
-	aTransactionID := aREST checkout: aCartID with: aValidCreditCard.
 	
-	aListOfPucharses := aREST pucharsesOf: aValidUser and: aValidUserPassword .
+	self advance: (32 * minute ).
 	
-	self assert: (aListOfPucharses size = 1 ).
-	self assert: (aListOfPucharses first id) = aTransactionID.
-	self assert: ((aSalesBook obtain: aTransactionID) includes: aBook1ISBN ).
-	self assert:  (((aSalesBook obtain: aTransactionID) quantityOf: aBook1ISBN ) = 3)! !
+	self should: [aREST checkout: aCartID with: aValidCreditCard ]
+		raise: Error
+		withExceptionDo: [ :anError |
+			self assert: anError messageText equals: REST cartTimeOutErrorDescription .
+			].! !
 
 !TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 04:09:52'!
 today
@@ -605,11 +614,11 @@ authenticate: aClientID with: aPassword
 	aClientPassword := clientsBook at: aClientID ifAbsent: [self error: REST userOrPasswordInvalidErrorDescription].
 	aClientPassword  = aPassword ifFalse: [self error: REST userOrPasswordInvalidErrorDescription ].! !
 
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:42:26'!
+!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 07:04:08'!
 cartAccess: aCartID
 	| lastAccesedTime |
-"	lastAccesedTime := 	cartsLastAccessedTime at: aCartID ifAbsentPut: timeProvider now.
-	(lastAccesedTime - timeProvider now) > 30 ifTrue: [self error: REST cartTimeOutErrorDescription]."
+	lastAccesedTime := 	cartsLastAccessedTime at: aCartID ifAbsentPut: timeProvider now.
+	((timeProvider now-lastAccesedTime ) > (30 * minute)) ifTrue: [self error: REST cartTimeOutErrorDescription].
 	cartsLastAccessedTime at: aCartID put: (timeProvider now).! !
 
 !REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:32:55'!
