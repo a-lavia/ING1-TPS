@@ -1,6 +1,6 @@
 !classDefinition: #TusLibrosTEST category: #'TusLibros.com'!
 TestCase subclass: #TusLibrosTEST
-	instanceVariableNames: 'aCart aCatalog aBook1ISBN aBook2ISBN aBook3ISBN aValidCreditCard anExpiredCreditCard aSalesBook aMerchantProcessorBehaviour aCashier aClientsBook aREST aStore currentTime aClient aClientPassword aClientWrongPassword aUnregisteredClient aCartsAdministrator aClientRecord'
+	instanceVariableNames: 'aCart aCatalog aBook1ISBN aBook2ISBN aBook3ISBN aValidCreditCard anExpiredCreditCard aSalesBook aMerchantProcessorBehaviour aCashier aClientsBook aCartsAdministrator aREST currentTime aClient aClientPassword aClientWrongPassword aUnregisteredClient aClientRecord'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
@@ -486,7 +486,7 @@ Object subclass: #CartSessionAdministrator
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:45:12'!
+!CartSessionAdministrator methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 15:45:12'!
 cartAccess: aCartID
 	| lastAccesedTime |
 	
@@ -494,12 +494,7 @@ cartAccess: aCartID
 	timeProvider now - lastAccesedTime >= (30 * minute) ifTrue: [ self error: CartSessionAdministrator cartTimeOutErrorDescription ].
 	cartsLastAccessedTime at: aCartID put: timeProvider now.! !
 
-!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:29:32'!
-clientOf: aCartID
-
-	^cartsOwners at: aCartID ! !
-
-!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:29:22'!
+!CartSessionAdministrator methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 15:29:22'!
 createCartFor: aClientID
 	| aCart aCartID |
 
@@ -510,7 +505,20 @@ createCartFor: aClientID
 	
 	^aCartID.! !
 
-!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:28:52'!
+
+!CartSessionAdministrator methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 15:29:32'!
+clientOf: aCartID
+
+	^cartsOwners at: aCartID ! !
+
+!CartSessionAdministrator methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 15:45:22'!
+obtain: aCartID
+
+	self cartAccess: aCartID.
+	^cartsIDRegister at: aCartID ifAbsent: [ self error: CartSessionAdministrator unexistentCartIDErrorDescription ].! !
+
+
+!CartSessionAdministrator methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 15:28:52'!
 initializeWith: aCatalog and: aTimeProvider
 	catalog := aCatalog.
 	timeProvider := aTimeProvider .
@@ -519,30 +527,25 @@ initializeWith: aCatalog and: aTimeProvider
 	cartsOwners := Dictionary new.
 	cartsLastAccessedTime := Dictionary new.! !
 
-!CartSessionAdministrator methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:45:22'!
-obtain: aCartID
-
-	self cartAccess: aCartID.
-	^cartsIDRegister at: aCartID ifAbsent: [ self error: CartSessionAdministrator unexistentCartIDErrorDescription ].! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'CartSessionAdministrator class' category: #'TusLibros.com'!
 CartSessionAdministrator class
 	instanceVariableNames: ''!
 
-!CartSessionAdministrator class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:20:21'!
+!CartSessionAdministrator class methodsFor: 'new' stamp: 'a-lavia 11/6/2017 15:32:23'!
+with: aCatalog and: aTimeProvider
+	^self new initializeWith: aCatalog and: aTimeProvider .! !
+
+
+!CartSessionAdministrator class methodsFor: 'messages' stamp: 'a-lavia 11/6/2017 15:20:21'!
 cartTimeOutErrorDescription
 	^'cart time out'! !
 
-!CartSessionAdministrator class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:38:46'!
+!CartSessionAdministrator class methodsFor: 'messages' stamp: 'a-lavia 11/6/2017 15:38:46'!
 unexistentCartIDErrorDescription
 
 	^'unexistent cart id'.! !
-
-!CartSessionAdministrator class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:32:23'!
-with: aCatalog and: aTimeProvider
-	^self new initializeWith: aCatalog and: aTimeProvider .! !
 
 
 !classDefinition: #Cashier category: #'TusLibros.com'!
@@ -591,24 +594,26 @@ obtainTransactionsRecord: aClient
 Cashier class
 	instanceVariableNames: ''!
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/29/2017 06:13:03'!
+!Cashier class methodsFor: 'messages' stamp: 'a-lavia 10/29/2017 06:13:03'!
 canNotCheckoutAnEmptyCartErrorDescription
 
 	^'cant checkout empty cart'.! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 03:25:21'!
+!Cashier class methodsFor: 'messages' stamp: 'a-lavia 10/30/2017 03:25:21'!
 canNotCheckoutWithAnExpiredCreditCardErrorDescription
 	^'cant checkout with expired credit card'! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:45:10'!
+!Cashier class methodsFor: 'messages' stamp: 'a-lavia 11/2/2017 04:45:10'!
 cardWithoutFundsErrorDescription
 	^'card without funds'! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 04:43:43'!
+!Cashier class methodsFor: 'messages' stamp: 'a-lavia 11/6/2017 16:04:12'!
 stolenCreditCardErrorDescription
+
 	^'stolen card'.! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:06:03'!
+
+!Cashier class methodsFor: 'new' stamp: 'a-lavia 11/6/2017 15:06:03'!
 with: aCalendar and: aSalesBook and: aMerchanProcessor and: aClientRecord
 
 	^self new initializeWith: aCalendar and: aSalesBook and: aMerchanProcessor and: aClientRecord .! !
@@ -682,7 +687,7 @@ isExpired: aMonthAndYear
 CreditCard class
 	instanceVariableNames: ''!
 
-!CreditCard class methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 23:41:11'!
+!CreditCard class methodsFor: 'new' stamp: 'a-lavia 11/5/2017 23:41:11'!
 with: aCreditCardNumber and: anExpirationMonthAndYear and: aCreditCardOwner 
 	^self new initializeWith: aCreditCardNumber and: anExpirationMonthAndYear and: aCreditCardOwner! !
 
@@ -694,46 +699,12 @@ Object subclass: #REST
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 15:31:27'!
-createCartwith: aClientID and: aPassword
-	| aCartID |
-	
-	self authenticate: aClientID with: aPassword .
-	aCartID := cartsAdministrator createCartFor: aClientID .
-	^aCartID .! !
-
-
-!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 15:30:18'!
-addTo: aCartID isbn: aBookISBN quantity: aBookQuantity 
-	| aCart |
-	
-	aCart := cartsAdministrator obtain: aCartID.
-	aCart add: aBookISBN quantity: aBookQuantity.! !
-
 !REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 03:18:10'!
 authenticate: aClientID with: aPassword
 	|aClientPassword|
 	
 	aClientPassword := clientsBook at: aClientID ifAbsent: [self error: REST userOrPasswordInvalidErrorDescription].
 	aClientPassword  = aPassword ifFalse: [self error: REST userOrPasswordInvalidErrorDescription ].! !
-
-!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 15:30:39'!
-checkout: aCartID with: aCreditCard
-	| aCart aClient aTransaction |
-	
-	aCart := cartsAdministrator obtain: aCartID .
-	aClient := cartsAdministrator clientOf: aCartID.
-	aTransaction := cashier checkout: aCart with: aCreditCard for: aClient.
-	
-	^aTransaction id.! !
-
-
-!REST methodsFor: 'check' stamp: 'a-lavia 11/6/2017 15:30:44'!
-contentOf: aCartID 
-	| aClientCart |
-	
-	aClientCart := cartsAdministrator obtain: aCartID .
-	^aClientCart contents .! !
 
 
 !REST methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 15:31:11'!
@@ -744,7 +715,39 @@ initializeWith: aClientsBook and: aCashier and: aCartAdministrator
 	cartsAdministrator := aCartAdministrator ! !
 
 
-!REST methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 14:55:50'!
+!REST methodsFor: 'operations' stamp: 'a-lavia 11/6/2017 15:30:18'!
+addTo: aCartID isbn: aBookISBN quantity: aBookQuantity 
+	| aCart |
+	
+	aCart := cartsAdministrator obtain: aCartID.
+	aCart add: aBookISBN quantity: aBookQuantity.! !
+
+!REST methodsFor: 'operations' stamp: 'a-lavia 11/6/2017 15:30:39'!
+checkout: aCartID with: aCreditCard
+	| aCart aClient aTransaction |
+	
+	aCart := cartsAdministrator obtain: aCartID .
+	aClient := cartsAdministrator clientOf: aCartID.
+	aTransaction := cashier checkout: aCart with: aCreditCard for: aClient.
+	
+	^aTransaction id.! !
+
+!REST methodsFor: 'operations' stamp: 'a-lavia 11/6/2017 15:30:44'!
+contentOf: aCartID 
+	| aClientCart |
+	
+	aClientCart := cartsAdministrator obtain: aCartID .
+	^aClientCart contents .! !
+
+!REST methodsFor: 'operations' stamp: 'a-lavia 11/6/2017 15:31:27'!
+createCartwith: aClientID and: aPassword
+	| aCartID |
+	
+	self authenticate: aClientID with: aPassword .
+	aCartID := cartsAdministrator createCartFor: aClientID .
+	^aCartID .! !
+
+!REST methodsFor: 'operations' stamp: 'a-lavia 11/6/2017 14:55:50'!
 pucharsesOf: aClientID and: aClientPassword
 
 	self authenticate: aClientID with: aClientPassword .
@@ -825,11 +828,12 @@ quantityOf: anItem
 
 	^(cartResume at: anItem) at: 2.! !
 
-!Transaction methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 06:16:54'!
+!Transaction methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 16:16:05'!
 total
 	| totalPrice |
 	
 	totalPrice := 0.
+	"esto quedo medio confuso, haria falta hacer una abstraccion, el itemResume se compone de la tupla <precio, cantidad>"
 	cartResume valuesDo: [ :itemResume | totalPrice := totalPrice + ((itemResume at: 1) * (itemResume at: 2))].
 	^totalPrice.! !
 
