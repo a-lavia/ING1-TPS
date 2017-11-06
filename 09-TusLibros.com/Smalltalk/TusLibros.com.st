@@ -5,34 +5,6 @@ TestCase subclass: #TusLibrosTEST
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:11:06'!
-addItemsToCart
-
-	aCart add: aBook1ISBN .
-	aCart add: aBook2ISBN.
-	aCart add: aBook3ISBN quantity: 2.
-! !
-
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 02:59:57'!
-addItemsToCatalog
-
-	aCatalog add: aBook1ISBN with: 10 * peso.
-	aCatalog add: aBook2ISBN with: 5 * peso.
-	aCatalog add: aBook3ISBN with: 2.5 * peso.
-	! !
-
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:59:11'!
-advance: milliseconds
-	currentTime := currentTime + milliseconds .! !
-
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/2/2017 20:04:54'!
-debit: anAmount from: aCreditCard
-	^aMerchantProcessorBehaviour value: anAmount value: aCreditCard .! !
-
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:59:25'!
-now
-	^currentTime.! !
-
 !TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:59:47'!
 setUp
 
@@ -378,7 +350,37 @@ test25cantOperateWithACartUnusedFor30Minutes
 			self assert: anError messageText equals: REST cartTimeOutErrorDescription .
 			].! !
 
-!TusLibrosTEST methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 04:09:52'!
+
+!TusLibrosTEST methodsFor: 'factory' stamp: 'a-lavia 11/6/2017 06:11:06'!
+addItemsToCart
+
+	aCart add: aBook1ISBN .
+	aCart add: aBook2ISBN.
+	aCart add: aBook3ISBN quantity: 2.
+! !
+
+!TusLibrosTEST methodsFor: 'factory' stamp: 'a-lavia 11/6/2017 02:59:57'!
+addItemsToCatalog
+
+	aCatalog add: aBook1ISBN with: 10 * peso.
+	aCatalog add: aBook2ISBN with: 5 * peso.
+	aCatalog add: aBook3ISBN with: 2.5 * peso.
+	! !
+
+
+!TusLibrosTEST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:59:11'!
+advance: milliseconds
+	currentTime := currentTime + milliseconds .! !
+
+!TusLibrosTEST methodsFor: 'actions' stamp: 'a-lavia 11/2/2017 20:04:54'!
+debit: anAmount from: aCreditCard
+	^aMerchantProcessorBehaviour value: anAmount value: aCreditCard .! !
+
+!TusLibrosTEST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:59:25'!
+now
+	^currentTime.! !
+
+!TusLibrosTEST methodsFor: 'actions' stamp: 'a-lavia 10/30/2017 04:09:52'!
 today
 
 	^FixedGregorianDate yearNumber: 2017 monthNumber: 10 dayNumber: 30.! !
@@ -391,48 +393,19 @@ Object subclass: #Cart
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/29/2017 00:08:45'!
+!Cart methodsFor: 'actions' stamp: 'a-lavia 10/29/2017 00:08:45'!
 add: anItem
 
 	(catalog includes: anItem) ifFalse: [ self error: Cart canNotAddItemFromOtherStoreErrorDescription ].
 	content add: anItem.! !
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/29/2017 00:08:50'!
+!Cart methodsFor: 'actions' stamp: 'a-lavia 10/29/2017 00:08:50'!
 add: anItem quantity: aQuantity 
 
 	(aQuantity > 0) ifFalse: [ self error: Cart canNotAddNonPositiveQuantityOfItemsErrorDescription ].
 	aQuantity timesRepeat: [ self add: anItem ].! !
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:18:45'!
-contents
-
-	^content copy.! !
-
-!Cart methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 01:48:34'!
-includes: anItem 
-
-	^content includes: anItem.! !
-
-!Cart methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/29/2017 00:08:57'!
-initializeWith: aCatalog
-
-	content := OrderedCollection new. 
-	catalog := aCatalog.! !
-
-!Cart methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/29/2017 00:09:05'!
-isEmpty
-
-	^content isEmpty.! !
-
-!Cart methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/29/2017 00:09:13'!
-quantityOf: anItem 
-	| quantity |
-	
-	quantity := 0.
-	content do: [ :aContainedItem | (anItem = aContainedItem) ifTrue: [ quantity := quantity + 1 ] ].
-	^quantity.! !
-
-!Cart methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:06:54'!
+!Cart methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:06:54'!
 resume
 	|aCartResume|
 	
@@ -440,13 +413,45 @@ resume
 	content do: [ :aContainedItem | aCartResume at: aContainedItem put: { (catalog priceOf: aContainedItem) . (self quantityOf: aContainedItem) }].
 	^aCartResume .! !
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 18:53:45'!
+
+!Cart methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 00:18:45'!
+contents
+
+	^content copy.! !
+
+!Cart methodsFor: 'accessing' stamp: 'a-lavia 10/30/2017 18:53:45'!
 total
 	| totalPrice |
 	
 	totalPrice := 0.
 	content do: [ :aContainedItem | totalPrice := totalPrice + (catalog priceOf: aContainedItem) ].
 	^totalPrice.! !
+
+
+!Cart methodsFor: 'check' stamp: 'a-lavia 10/30/2017 01:48:34'!
+includes: anItem 
+
+	^content includes: anItem.! !
+
+!Cart methodsFor: 'check' stamp: 'a-lavia 10/29/2017 00:09:05'!
+isEmpty
+
+	^content isEmpty.! !
+
+!Cart methodsFor: 'check' stamp: 'a-lavia 10/29/2017 00:09:13'!
+quantityOf: anItem 
+	| quantity |
+	
+	quantity := 0.
+	content do: [ :aContainedItem | (anItem = aContainedItem) ifTrue: [ quantity := quantity + 1 ] ].
+	^quantity.! !
+
+
+!Cart methodsFor: 'initialization' stamp: 'a-lavia 10/29/2017 00:08:57'!
+initializeWith: aCatalog
+
+	content := OrderedCollection new. 
+	catalog := aCatalog.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -474,7 +479,7 @@ Object subclass: #Cashier
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:08:19'!
+!Cashier methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 00:08:19'!
 checkout: aCart with: aCreditCard
 	| aTransaction |
 	
@@ -489,7 +494,8 @@ checkout: aCart with: aCreditCard
 	
 	^aTransaction .! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 22:47:59'!
+
+!Cashier methodsFor: 'initialization' stamp: 'a-lavia 11/5/2017 22:47:59'!
 initializeWith: aCalendar and: aSalesBook and: aMerchantProcessor
 
 	calendar := aCalendar .
@@ -532,26 +538,28 @@ Object subclass: #Catalog
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!Catalog methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:28:32'!
+!Catalog methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 00:28:32'!
 add: anItem with: aPrice
 
 	aPrice < 0 ifTrue: [ self error: Catalog canNotRegisterAnItemWithNonPositivePriceErrorDescription ].
 	content at: anItem  put: aPrice.! !
 
-!Catalog methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 18:51:17'!
+
+!Catalog methodsFor: 'check' stamp: 'a-lavia 10/30/2017 18:51:17'!
 includes: anItem
 
 	^content includesKey: anItem.! !
 
-!Catalog methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 18:44:47'!
-initialize
-
-	content := Dictionary new.! !
-
-!Catalog methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 18:46:03'!
+!Catalog methodsFor: 'check' stamp: 'a-lavia 10/30/2017 18:46:03'!
 priceOf: anItem
 
 	^content at: anItem .! !
+
+
+!Catalog methodsFor: 'initialization' stamp: 'a-lavia 10/30/2017 18:44:47'!
+initialize
+
+	content := Dictionary new.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -572,14 +580,15 @@ Object subclass: #CreditCard
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/5/2017 23:28:41'!
+!CreditCard methodsFor: 'initialization' stamp: 'a-lavia 11/5/2017 23:28:41'!
 initializeWith: aCreditCardNumber and: anExpirationMonthAndYear and: aCreditCardOwner
 
 	number := aCreditCardNumber .
 	expiration := anExpirationMonthAndYear.
 	owner := aCreditCardOwner .! !
 
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'a-lavia 10/30/2017 03:38:48'!
+
+!CreditCard methodsFor: 'check' stamp: 'a-lavia 10/30/2017 03:38:48'!
 isExpired: aMonthAndYear
 
 	^expiration  < aMonthAndYear .! !
@@ -602,39 +611,6 @@ Object subclass: #REST
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:33:02'!
-addTo: aCartID isbn: aBookISBN quantity: aBookQuantity 
-	self cartAccess: aCartID .
-	store addTo: aCartID isbn: aBookISBN quantity: aBookQuantity .! !
-
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:18:10'!
-authenticate: aClientID with: aPassword
-	|aClientPassword|
-	
-	aClientPassword := clientsBook at: aClientID ifAbsent: [self error: REST userOrPasswordInvalidErrorDescription].
-	aClientPassword  = aPassword ifFalse: [self error: REST userOrPasswordInvalidErrorDescription ].! !
-
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 07:04:08'!
-cartAccess: aCartID
-	| lastAccesedTime |
-	lastAccesedTime := 	cartsLastAccessedTime at: aCartID ifAbsentPut: timeProvider now.
-	((timeProvider now-lastAccesedTime ) > (30 * minute)) ifTrue: [self error: REST cartTimeOutErrorDescription].
-	cartsLastAccessedTime at: aCartID put: (timeProvider now).! !
-
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:32:55'!
-checkout: aCartID with: aCreditCard
-	| aTransactionID |
-	self cartAccess: aCartID .
-	aTransactionID := store checkout: aCartID with: aCreditCard.
-	^aTransactionID.! !
-
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:32:49'!
-contentOf: aCartID 
-	| aClientCart |
-	self cartAccess: aCartID .
-	aClientCart := store obtainCart: aCartID .
-	^aClientCart contents .! !
-
 !REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:32:35'!
 createCartwith: aClientID and: aPassword
 	| aCartID |
@@ -646,7 +622,43 @@ createCartwith: aClientID and: aPassword
 	
 	^aCartID .! !
 
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:33:38'!
+
+!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:33:02'!
+addTo: aCartID isbn: aBookISBN quantity: aBookQuantity 
+	self cartAccess: aCartID .
+	store addTo: aCartID isbn: aBookISBN quantity: aBookQuantity .! !
+
+!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 03:18:10'!
+authenticate: aClientID with: aPassword
+	|aClientPassword|
+	
+	aClientPassword := clientsBook at: aClientID ifAbsent: [self error: REST userOrPasswordInvalidErrorDescription].
+	aClientPassword  = aPassword ifFalse: [self error: REST userOrPasswordInvalidErrorDescription ].! !
+
+!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 07:04:08'!
+cartAccess: aCartID
+	| lastAccesedTime |
+	lastAccesedTime := 	cartsLastAccessedTime at: aCartID ifAbsentPut: timeProvider now.
+	((timeProvider now-lastAccesedTime ) > (30 * minute)) ifTrue: [self error: REST cartTimeOutErrorDescription].
+	cartsLastAccessedTime at: aCartID put: (timeProvider now).! !
+
+!REST methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 06:32:55'!
+checkout: aCartID with: aCreditCard
+	| aTransactionID |
+	self cartAccess: aCartID .
+	aTransactionID := store checkout: aCartID with: aCreditCard.
+	^aTransactionID.! !
+
+
+!REST methodsFor: 'check' stamp: 'a-lavia 11/6/2017 06:32:49'!
+contentOf: aCartID 
+	| aClientCart |
+	self cartAccess: aCartID .
+	aClientCart := store obtainCart: aCartID .
+	^aClientCart contents .! !
+
+
+!REST methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 06:33:38'!
 initializeWith: aClientsBook and: aStore and: aTimeProvider
 
 	clientsBook := aClientsBook .
@@ -654,7 +666,8 @@ initializeWith: aClientsBook and: aStore and: aTimeProvider
 	timeProvider := aTimeProvider .
 	cartsLastAccessedTime := Dictionary new.! !
 
-!REST methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:54:51'!
+
+!REST methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 05:54:51'!
 pucharsesOf: aClientID and: aClientPassword
 
 	self authenticate: aClientID with: aClientPassword .
@@ -687,32 +700,35 @@ Object subclass: #SalesBook
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!SalesBook methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:33:27'!
+!SalesBook methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 00:33:27'!
 add: aTransaction 
 
 	transactions at: (aTransaction id) put: aTransaction.! !
 
-!SalesBook methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:33:24'!
+
+!SalesBook methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 00:33:24'!
 initialize
 
 	transactions := Dictionary new.! !
 
-!SalesBook methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:33:21'!
+
+!SalesBook methodsFor: 'check' stamp: 'a-lavia 11/6/2017 00:33:21'!
 isEmpty
 
 	^transactions isEmpty .! !
 
-!SalesBook methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:32:33'!
+
+!SalesBook methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 00:32:33'!
 nextID
 
 	^transactions size.! !
 
-!SalesBook methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:33:16'!
+!SalesBook methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 00:33:16'!
 obtain: aTransactionID
 
 	^transactions at: aTransactionID ! !
 
-!SalesBook methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:33:13'!
+!SalesBook methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 00:33:13'!
 size
 
 	^transactions size.! !
@@ -725,14 +741,14 @@ Object subclass: #Store
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!Store methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:10:53'!
+!Store methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 03:10:53'!
 addTo: aCartID isbn: aBookISBN quantity: aBookQuantity 
 	| aClientCart |
 	
 	aClientCart := self obtainCart: aCartID .
 	aClientCart add: aBookISBN quantity: aBookQuantity .! !
 
-!Store methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:55:27'!
+!Store methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 05:55:27'!
 checkout: aCartID with: aCreditCard
 	| aClientCart aTransaction aCartOwnerID aClientRecord |
 	
@@ -746,7 +762,7 @@ checkout: aCartID with: aCreditCard
 	
 	^aTransaction id.! !
 
-!Store methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:34:02'!
+!Store methodsFor: 'actions' stamp: 'a-lavia 11/6/2017 03:34:02'!
 createCartFor: aClientID
 	| aCartID |
 	
@@ -756,7 +772,8 @@ createCartFor: aClientID
 	
 	^aCartID.! !
 
-!Store methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 03:32:53'!
+
+!Store methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 03:32:53'!
 initializeWith: aCatalog and: aCashier
 	catalog := aCatalog.
 	cashier := aCashier.
@@ -766,12 +783,13 @@ initializeWith: aCatalog and: aCashier
 	cartsRegister := Dictionary new.
 	cartsOwners := Dictionary new.! !
 
-!Store methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:55:20'!
+
+!Store methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 05:55:20'!
 obtainCart: aCartID
 
 	^cartsRegister at: aCartID ifAbsent: [self error: Store unexistentCartIDErrorDescription.].! !
 
-!Store methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 05:55:16'!
+!Store methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 05:55:16'!
 obtainTransactionsRecord: aClientID
 
 	^clientPucharsesRecord at: aClientID ifAbsentPut: [OrderedCollection new.]. ! !
@@ -808,34 +826,36 @@ Object subclass: #Transaction
 	poolDictionaries: ''
 	category: 'TusLibros.com'!
 
-!Transaction methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:34:48'!
+!Transaction methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 00:34:48'!
 id
 
 	^id.! !
 
-!Transaction methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:34:51'!
-includes: anItem 
-
-	^cartResume includesKey: anItem .! !
-
-!Transaction methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 00:03:50'!
-initializeWith: aID and: aCartResume
-
-	id := aID.
-	cartResume := aCartResume! !
-
-!Transaction methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:18:06'!
+!Transaction methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 06:18:06'!
 quantityOf: anItem
 
 	^(cartResume at: anItem) at: 2.! !
 
-!Transaction methodsFor: 'as yet unclassified' stamp: 'a-lavia 11/6/2017 06:16:54'!
+!Transaction methodsFor: 'accessing' stamp: 'a-lavia 11/6/2017 06:16:54'!
 total
 	| totalPrice |
 	
 	totalPrice := 0.
 	cartResume valuesDo: [ :itemResume | totalPrice := totalPrice + ((itemResume at: 1) * (itemResume at: 2))].
 	^totalPrice.! !
+
+
+!Transaction methodsFor: 'check' stamp: 'a-lavia 11/6/2017 00:34:51'!
+includes: anItem 
+
+	^cartResume includesKey: anItem .! !
+
+
+!Transaction methodsFor: 'initialization' stamp: 'a-lavia 11/6/2017 00:03:50'!
+initializeWith: aID and: aCartResume
+
+	id := aID.
+	cartResume := aCartResume! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
