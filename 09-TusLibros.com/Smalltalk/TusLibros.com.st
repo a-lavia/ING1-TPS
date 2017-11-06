@@ -190,7 +190,7 @@ test17cantAddBookISBNToUnexistentCartID
 			self assert: anError messageText equals: CartSessionAdministrator unexistentCartIDErrorDescription 
 			].! !
 
-!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:40:56'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 16:25:35'!
 test18cantAddToExistentCartIDaBookISBNOutsideTheCatalog
 	| aCartID |
 	
@@ -200,6 +200,7 @@ test18cantAddToExistentCartIDaBookISBNOutsideTheCatalog
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals: Cart canNotAddItemFromOtherStoreErrorDescription .
+			self assert: ((aREST contentOf: aCartID) isEmpty)
 			].! !
 
 !TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:51:30'!
@@ -216,7 +217,7 @@ test19aExistentCartIDHoldsACartThatRecordsAddedsBookISBN
 	self assert: aCartContent size = 3.
 	self assert: (aCartContent includes: aBook1ISBN ).! !
 
-!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 15:41:07'!
+!TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 16:28:12'!
 test20aClientCanNotCheckoutAnEmptyCart
 	| aCartID |
 	
@@ -228,6 +229,7 @@ test20aClientCanNotCheckoutAnEmptyCart
 		raise: Error
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals: Cashier canNotCheckoutAnEmptyCartErrorDescription .
+			self assert: (aSalesBook isEmpty).
 			].! !
 
 !TusLibrosTEST methodsFor: 'tests' stamp: 'a-lavia 11/6/2017 14:51:39'!
@@ -332,9 +334,11 @@ addItemsToCatalog
 	aCatalog add: aBook3ISBN with: 2.5 * peso.
 	! !
 
-!TusLibrosTEST methodsFor: 'setUp' stamp: 'a-lavia 11/6/2017 15:43:19'!
+!TusLibrosTEST methodsFor: 'setUp' stamp: 'a-lavia 11/6/2017 16:30:47'!
 setUp
 
+	"el setup fue ampliandose a medida que avanzamos con los tests, inicializa cosas demas para algunos tests, futuro refactor recategorizar los tests e incluir factory que inicializa solo lo necesario"
+	
 	currentTime _ 32423324 * millisecond.
 	
 	aCatalog _ Catalog new.
